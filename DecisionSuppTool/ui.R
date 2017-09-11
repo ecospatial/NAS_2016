@@ -92,12 +92,14 @@ shinyUI(
         )
                    
     )
-    # ,
-    # 
-    # #Bottom Panel
-    # absolutePanel(bottom = 10, left = "40%", width = 500, height = 300, style="background: #d5e8ea; padding:20px; border: 1px solid #337ab7; border-radius: 5px", draggable=TRUE,
-    #     div()
-    # )
-    ,absolutePanel(bottom = 0,left=0,right=396,height="16px",style="background: rgba(255,255,255,0.7); font-size: 11px; color: #333",tags$span("Modeling by"),tags$a("Tyler Hardy",href="www.tylerthardy.com"),tags$span("and Wei Wu 2016-2017; Data from USGS, and others referenced in respective tooltips."))
+    ,
+
+    #Bottom Panel
+    absolutePanel(bottom = 10, left = "40%", width = 500, height = 300, style="background: #d5e8ea; padding:20px; border: 1px solid #337ab7; border-radius: 5px", draggable=TRUE,
+        div()
+    )
+    ,
+    #Data attribution
+    absolutePanel(bottom = 0,left=0,right=396,height="16px",style="background: rgba(255,255,255,0.7); font-size: 11px; color: #333",tags$span("Modeling by"),tags$a("Tyler Hardy",href="www.tylerthardy.com"),tags$span("and Wei Wu 2016-2017; Data from USGS, and others referenced in respective tooltips."))
   )
 )
