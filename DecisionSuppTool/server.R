@@ -29,6 +29,7 @@ inlandbuff = get_postgis_query(con, "SELECT * FROM thkbuffers", geom_name = "geo
 inlandbuff@data = merge(inlandbuff@data, wetloss, by = "ORIG_FID")
 
 source("scenarios.R")
+source("ESV.R")
 
 #########################################
 # Drop Database connection
