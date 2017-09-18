@@ -12,6 +12,6 @@ if(exists("user") || exists("pw")) {
   rm(pw);rm(user)
 }
 
-dbWriteTable(con, "esv",value=esv_dat,row.names=FALSE)
+dbWriteTable(con, "esv",value=esvDat,row.names=FALSE)
 
 dbDisconnect(con)
