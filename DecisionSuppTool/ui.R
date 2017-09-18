@@ -95,7 +95,7 @@ shinyUI(
     ,
 
     #Bottom Panel
-    absolutePanel(bottom = 10, left = "40%", width = 500, height = 300, style="background: #d5e8ea; padding:20px; border: 1px solid #337ab7; border-radius: 5px", draggable=TRUE,
+    absolutePanel(bottom = 20, left = "40%", width = 500, height = 300, style="background: #d5e8ea; padding:20px; border: 1px solid #337ab7; border-radius: 5px", draggable=TRUE,
         div()
     )
     ,
