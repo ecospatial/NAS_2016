@@ -17,6 +17,7 @@ esvDat = read.delim('TEEB.txt') %>%
 #Currency conversion (https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/)
 url="http://fxtop.com/en/historical-exchange-rates.php?A=1&C1=%s&C2=%s&YA=1&DD1=%s&MM1=%s&YYYY1=%s&B=1&P=&I=1&DD2=%s&MM2=%s&YYYY2=%s&btnOK=Go%%21"
 
+conversionData = data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), stringsAsFactors=FALSE)
 getConvRate = function(year, curr1, curr2){ #year, to, from
   new_url=sprintf(url,curr1,curr2,"01","01",year,"31","12",year)
   
@@ -25,6 +26,7 @@ getConvRate = function(year, curr1, curr2){ #year, to, from
     html_table(header=TRUE) 
   
   colnames(conv_chart) = c("YEAR", "avgRate","minRate","maxRate","Days")
+  conversionData[nrow(conversionData)+1,] = c(curr1,curr2,year,conv_chart$minRate,conv_chart$avgRate,conv_chart$maxRate)
   return(conv_chart[1,]$avgRate)
 }
 
