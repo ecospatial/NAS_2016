@@ -4,7 +4,7 @@ library(rvest)
 library(lubridate)
 library(dplyr)
 
-dat = read.delim('TEEB.txt') %>%
+esv_dat = read.delim('TEEB.txt') %>%
   filter(Biome %in% c('Marine','Coastal','Coral Reefs','Coastal wetlands')) %>%
   filter(Valuation.Method != 'Benefit Transfer') %>%
   filter(!Continent %in% c("Various", "World")) %>%
@@ -42,41 +42,40 @@ adjInflation = function(oldYear,currYear) {
            yearlyInflation$cpi[yearlyInflation$cpi_year == oldYear])
 }
 
-
-# chart_site=read_html(new_url)
-# 
-# conv_chart = chart_site %>% 
-#   html_node("td td tr:nth-child(9) table") %>%
-#   html_table(header=TRUE)
-# 
-# colnames(conv_chart) = c("YEAR", "ConvMin","ConvMax","ConvAvg","Days")
-
 #Convert all to USD (in whichever year, NOT all 2007)
-dat$uninflUSD = rep(NA,nrow(dat))
-for(i in 1:nrow(dat)){
-  if (!dat[i,]$standardized.2007.value.) {
-    year = dat[i,]$Year.Of.Validation
-    convRate = getConvRate(year,"USD",dat[i,]$ISO)
-    dat[i,]$uninflUSD = convRate*dat[i,]$Value
+esv_dat$uninflUSD = rep(NA,nrow(esv_dat))
+for(i in 1:nrow(esv_dat)){
+  if (!esv_dat[i,]$standardized.2007.value.) {
+    year = esv_dat[i,]$Year.Of.Validation
+    convRate = getConvRate(year,"USD",esv_dat[i,]$ISO)
+    esv_dat[i,]$uninflUSD = convRate*esv_dat[i,]$Value
   }
+}
+i=154
+if (!esv_dat[i,]$standardized.2007.value.) {
+  year = esv_dat[i,]$Year.Of.Validation
+  convRate = getConvRate(year,"USD",esv_dat[i,]$ISO)
+  print(convRate*esv_dat[i,]$Value)
 }
 
 #Adjust USD to USD2007
-dat$USD2007 = dat$Value
-for(i in 1:nrow(dat)){
-  if (!dat[i,]$standardized.2007.value.)
-    dat[i,]$USD2007 = dat[i,]$uninflUSD*adjInflation(dat[i,]$Year.Of.Validation, 2007)
+esv_dat$USD2007 = esv_dat$Value
+for(i in 1:nrow(esv_dat)){
+  if (!esv_dat[i,]$standardized.2007.value.)
+    esv_dat[i,]$USD2007 = esv_dat[i,]$uninflUSD*adjInflation(esv_dat[i,]$Year.Of.Validation, 2007)
   else
-    dat[i,]$USD2007 = dat[i,]$Value
+    esv_dat[i,]$USD2007 = esv_dat[i,]$Value
 }
 
 #Salvador Colon https://books.google.com/books?id=XC8k3GXUKmoC&pg=PA35&lpg=PA35&dq=exchange+rates+1998+salvador+colon++svc&source=bl&ots=XcGUqbF28A&sig=xvXLFuQWQyKL7-J86KZ6_B5cAbM&hl=en&sa=X&ved=0ahUKEwixwZbI-6XPAhXI7D4KHRiNDJY4ChDoAQgnMAI#v=onepage&q=exchange%20rates%201998%20salvador%20colon%20%20svc&f=false
 #
-# colons = which(is.na(dat$USD2007))
+# colons = which(is.na(esv_dat$USD2007))
 # for (i in colons)
 # {
-#   dat[i,]$uninflUSD = dat[i,]$Value*0.11400
-#   dat[i,]$USD2007 = dat[i,]$uninflUSD*adjInflation(dat[i,]$Year.Of.Validation, 2007)
+#   esv_dat[i,]$uninflUSD = esv_dat[i,]$Value*0.11400
+#   esv_dat[i,]$USD2007 = esv_dat[i,]$uninflUSD*adjInflation(esv_dat[i,]$Year.Of.Validation, 2007)
 # }
 
-write.table(dat, "TEEB-NoBT-USD2007(2).txt", row.names = FALSE, quote = FALSE, sep="\t")
+#write.table(esv_dat, "TEEB-NoBT-USD2007.txt", row.names = FALSE, quote = FALSE, sep="\t")
+
+
