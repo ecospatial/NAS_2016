@@ -24,8 +24,8 @@ getConvRate = function(year, curr1, curr2){ #year, to, from
     html_node("td td tr:nth-child(9) table") %>%
     html_table(header=TRUE) 
   
-  colnames(conv_chart) = c("YEAR", "ConvMin","ConvMax","ConvAvg","Days")
-  return(conv_chart[1,]$ConvAvg)
+  colnames(conv_chart) = c("YEAR", "avgRate","minRate","maxRate","Days")
+  return(conv_chart[1,]$avgRate)
 }
 
 #USD inflation (http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
