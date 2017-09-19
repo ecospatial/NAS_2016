@@ -8,8 +8,9 @@ esvDat = read.delim('TEEB.txt') %>%
   filter(Biome %in% c('Marine','Coastal','Coral Reefs','Coastal wetlands')) %>%
   filter(Valuation.Method != 'Benefit Transfer') %>%
   filter(!Continent %in% c("Various", "World")) %>%
-  #Generate country codes for conversion to USD2007
+  #Generate country codes for conversion to USD2007; cleanup as well
   mutate(ISO = substring(Unit,1,3)) %>%
+  mutate(ISO = sub('\\$','D', ISO)) %>%
   #clean up value of null refs/empty values
   filter(!Value %in% c(NA,"#REF!")) %>%
   mutate(Value = as.numeric(levels(Value))[Value])
@@ -30,20 +31,6 @@ getConvRate = function(year, curr1, curr2){ #year, to, from
   return(conv_chart[1,]$avgRate)
 }
 
-#USD inflation (http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
-#Updated download link: https://fred.stlouisfed.org/series/CPIAUCSL
-monthlyInflation = read.csv("CPIAUCSL.csv", header = TRUE)
-monthlyInflation$cpi_year <- year(monthlyInflation$DATE)
-yearlyInflation <- monthlyInflation %>% group_by(cpi_year) %>% summarize(cpi = mean(CPIAUCSL))
-
-adjInflation = function(oldYear,currYear) {
-  if (oldYear < min(yearlyInflation))
-    return(-9999)
-  
-  return(yearlyInflation$cpi[yearlyInflation$cpi_year == currYear]/
-           yearlyInflation$cpi[yearlyInflation$cpi_year == oldYear])
-}
-
 #Convert all to USD (in whichever year, NOT all 2007)
 esvDat$uninflUSD = rep(NA,nrow(esvDat))
 for(i in 1:nrow(esvDat)){
@@ -52,6 +39,20 @@ for(i in 1:nrow(esvDat)){
     convRate = getConvRate(year,"USD",esvDat[i,]$ISO)
     esvDat[i,]$uninflUSD = convRate*esvDat[i,]$Value
   }
+}
+
+#USD inflation (http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
+#Updated download link: https://fred.stlouisfed.org/series/CPIAUCSL
+monthlyInflation = read.csv("CPIAUCSL.csv", header = TRUE)
+monthlyInflation$cpi_year = year(monthlyInflation$DATE)
+yearlyInflation = monthlyInflation %>% group_by(cpi_year) %>% summarize(cpi = mean(CPIAUCSL))
+
+adjInflation = function(oldYear,currYear) {
+  if (oldYear < min(yearlyInflation))
+    return(-9999)
+  
+  return(yearlyInflation$cpi[yearlyInflation$cpi_year == currYear]/
+           yearlyInflation$cpi[yearlyInflation$cpi_year == oldYear])
 }
 
 #Adjust USD to USD2007
