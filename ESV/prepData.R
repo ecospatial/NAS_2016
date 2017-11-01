@@ -12,32 +12,63 @@ esvDat = read.delim('TEEB.txt') %>%
   mutate(ISO = substring(Unit,1,3)) %>%
   mutate(ISO = sub('\\$','D', ISO)) %>%
   #clean up value of null refs/empty values
+  filter(!ServiceArea %in% c(NA,"#REF!")) %>%
   filter(!Value %in% c(NA,"#REF!")) %>%
   mutate(Value = as.numeric(levels(Value))[Value])
 
 #Currency conversion (https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/)
 url="http://fxtop.com/en/historical-exchange-rates.php?A=1&C1=%s&C2=%s&YA=1&DD1=%s&MM1=%s&YYYY1=%s&B=1&P=&I=1&DD2=%s&MM2=%s&YYYY2=%s&btnOK=Go%%21"
 
-conversionData = data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), stringsAsFactors=FALSE)
-getConvRate = function(year, curr1, curr2){ #year, to, from
-  new_url=sprintf(url,curr1,curr2,"01","01",year,"31","12",year)
+tryCatch({
+  conversionDat = read.delim("conversionDat.txt")
+},
+error = function(e) {
+  conversionDat <<- data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), stringsAsFactors=FALSE)
+})
+
+getConvRate = function(yr, cur1, cur2){ #year, to, from
+  #Check if conversion is to the same currency
+  if(cur1 == cur2)
+    return(data.frame(year=yr,avgRate=1,minRate=1,maxRate=1,days=365))
   
-  conv_chart = read_html(new_url) %>% 
+  #Check to see if data is already scraped
+  results = conversionDat %>% filter(curr1==cur1, curr2==cur2, year==yr)
+  if(nrow(results) > 0)
+    return(data.frame(year=as.numeric(yr), avgRate=as.numeric(results[1,]$avgRate),
+                      minRate=as.numeric(results[1,]$minRate), maxRate=as.numeric(results[1,]$maxRate)))
+  
+  #Scrape
+  new_url=sprintf(url,cur1,cur2,"01","01",yr,"31","12",yr)
+  
+  page = read_html(new_url)
+  
+  convRate = page %>% 
     html_node("td td tr:nth-child(9) table") %>%
-    html_table(header=TRUE) 
+    html_table(header=TRUE)
   
-  colnames(conv_chart) = c("YEAR", "avgRate","minRate","maxRate","Days")
-  conversionData[nrow(conversionData)+1,] = c(curr1,curr2,year,conv_chart$minRate,conv_chart$avgRate,conv_chart$maxRate)
-  return(conv_chart[1,]$avgRate)
+  if(nrow(convRate) == 0) {
+    rate = page %>% html_node("a+ table tr:nth-child(1) td+ td") %>% html_text() %>%
+      substring(7,nchar(.)-4) %>% as.numeric()
+    yr = page %>% html_node("td td tr:nth-child(5) > td") %>% html_text() %>% 
+      substring(1,gregexpr("1 USD", .)[[1]][1]-1) %>% substring(nchar(.)-4+1,nchar(.)) %>% as.numeric()
+    convRate = data.frame(year=yr,avgRate=rate,minRate=rate,maxRate=rate,days=365)
+  }
+  
+  colnames(convRate) = c("year", "avgRate","minRate","maxRate","days")
+  
+  return(convRate)
 }
 
 #Convert all to USD (in whichever year, NOT all 2007)
 esvDat$uninflUSD = rep(NA,nrow(esvDat))
 for(i in 1:nrow(esvDat)){
-  if (!esvDat[i,]$standardized.2007.value.) {
+  if(!esvDat[i,]$standardized.2007.value.) {
     year = esvDat[i,]$Year.Of.Validation
     convRate = getConvRate(year,"USD",esvDat[i,]$ISO)
-    esvDat[i,]$uninflUSD = convRate*esvDat[i,]$Value
+    if(esvDat[i,]$ISO != "USD")
+      conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$minRate,convRate$avgRate,convRate$maxRate)
+    esvDat[i,]$uninflUSD = convRate$avgRate*esvDat[i,]$Value
+    write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
   }
 }
 
