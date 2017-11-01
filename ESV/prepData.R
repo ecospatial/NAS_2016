@@ -23,19 +23,19 @@ tryCatch({
   conversionDat = read.delim("conversionDat.txt")
 },
 error = function(e) {
-  conversionDat <<- data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), stringsAsFactors=FALSE)
+  conversionDat <<- data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), days=numeric(0), stringsAsFactors=FALSE)
 })
 
 getConvRate = function(yr, cur1, cur2){ #year, to, from
   #Check if conversion is to the same currency
   if(cur1 == cur2)
-    return(data.frame(year=yr,avgRate=1,minRate=1,maxRate=1,days=365))
+    return(list(found=TRUE, data=data.frame(year=yr,avgRate=1,minRate=1,maxRate=1,days=365)))
   
   #Check to see if data is already scraped
   results = conversionDat %>% filter(curr1==cur1, curr2==cur2, year==yr)
   if(nrow(results) > 0)
-    return(data.frame(year=as.numeric(yr), avgRate=as.numeric(results[1,]$avgRate),
-                      minRate=as.numeric(results[1,]$minRate), maxRate=as.numeric(results[1,]$maxRate)))
+    return(list(found=TRUE, data=data.frame(year=as.numeric(yr), avgRate=as.numeric(results[1,]$avgRate),
+                      minRate=as.numeric(results[1,]$minRate), maxRate=as.numeric(results[1,]$maxRate))))
   
   #Scrape
   new_url=sprintf(url,cur1,cur2,"01","01",yr,"31","12",yr)
@@ -56,7 +56,7 @@ getConvRate = function(yr, cur1, cur2){ #year, to, from
   
   colnames(convRate) = c("year", "avgRate","minRate","maxRate","days")
   
-  return(convRate)
+  return(list(found=FALSE, data=convRate))
 }
 
 #Convert all to USD (in whichever year, NOT all 2007)
@@ -65,10 +65,15 @@ for(i in 1:nrow(esvDat)){
   if(!esvDat[i,]$standardized.2007.value.) {
     year = esvDat[i,]$Year.Of.Validation
     convRate = getConvRate(year,"USD",esvDat[i,]$ISO)
-    if(esvDat[i,]$ISO != "USD")
-      conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$minRate,convRate$avgRate,convRate$maxRate)
-    esvDat[i,]$uninflUSD = convRate$avgRate*esvDat[i,]$Value
-    write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
+    
+    esvDat[i,]$uninflUSD = convRate$data$avgRate*esvDat[i,]$Value
+    
+    if(!convRate$found)
+    {
+      if(esvDat[i,]$ISO != "USD")
+        conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$data$minRate,convRate$data$avgRate,convRate$data$maxRate)
+      write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
+    }
   }
 }
 
