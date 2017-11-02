@@ -72,10 +72,10 @@ for(i in 1:nrow(esvDat)){
     {
       if(esvDat[i,]$ISO != "USD")
         conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$data$minRate,convRate$data$avgRate,convRate$data$maxRate,convRate$data$days)
-      write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
     }
   }
 }
+write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
 
 #USD inflation (http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
 #Updated download link: https://fred.stlouisfed.org/series/CPIAUCSL
