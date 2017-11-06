@@ -110,3 +110,8 @@ for(i in 1:nrow(esvDat)){
 #write.table(esvDat, "TEEB-NoBT-USD2007.txt", row.names = FALSE, quote = FALSE, sep="\t")
 
 
+
+
+
+
+source("./population/getPop.R")
