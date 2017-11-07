@@ -5,9 +5,13 @@ library(readxl)
 # data(pop)
 # Above data too coarse (5 year interval, only after 1990)
 # Use downloaded data
-url = "https://esa.un.org/unpd/wpp/DVD/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2017_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx"
 file = "./population/wpp2017.xlsx"
-download.file(url, destfile = file, mode="wb")
+
+if(!file.exists(file))
+{
+  url = "https://esa.un.org/unpd/wpp/DVD/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2017_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx"
+  download.file(url, destfile = file, mode="wb")
+}
 pop = read_xlsx("./population/wpp2017.xlsx")
 colnames(pop) = pop[12,]
 pop = pop[-(1:12),]
