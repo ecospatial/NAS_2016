@@ -3,7 +3,7 @@ library(rjags)
 library(sp)
 library(magrittr)
 library(rgdal)
-source("C:\\Requires\\CodaSamplesDIC.R")
+source("../RUtilityFunctions/CodaSamplesDIC.R")
 
 
 inlandbuff = readOGR("C:\\Users\\GCRLWuHardy\\Documents\\071416-InlandTHK\\inlandbuff.shp","inlandbuff")
