@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 *.xls
 *.txt
-=======
+*.RData
 conversionDat.txt
->>>>>>> e180fec0bca9ba79ca238ab8c82c351a19068455
+
