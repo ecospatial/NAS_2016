@@ -246,12 +246,6 @@ jags1 = jags.model(model1, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output1 = coda.samples(jags1, variable.names = c("b0","b1","USD.sigma"), n.iter=50000, thin=1)
 output1pred = coda.samples(jags1, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 output1ppc = coda.samples(jags1, variable.names = c("p.sd","p.mean","disc"), n.iter=50000, thin=1)
-summary(output1)
-gelman.diag(output1)$psrf
-
-mcmc_areas(output1, prob=0.95)
-mcmc_areas(output1, prob=0.95, regex_pars=c("b1"))
-
 
 
 # Model 2 - Slope ---------------------------------------------------------
@@ -297,16 +291,6 @@ jags2 = jags.model(model2, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output2 = coda.samples(jags2, variable.names = c("b0","b1","USD.sigma", "b1.sigma"), n.iter=50000, thin=1)
 output2pred = coda.samples(jags2, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 output2ppc = coda.samples(jags2, variable.names = c("p.sd","p.mean","disc"), n.iter=50000, thin=1)
-summary(output2)
-gelman.diag(output2)$psrf
-
-mcmc_areas(output2, prob=0.95)
-mcmc_areas(output2, prob=0.95, regex_pars=c("b0","b1\\[\\d*\\]"))
-mcmc_areas(output2, prob=0.95, regex_pars=c("b1\\[\\d*\\]"))
-
-bigout2 = data.frame(do.call(rbind,output2))
-plot(density(bigout2$b1.1.-bigout2$b1.2.))
-
 
 # Model 3 - Intercept -----------------------------------------------------
 { # Model 3
@@ -351,16 +335,6 @@ jags3 = jags.model(model3, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output3 = coda.samples(jags3, variable.names = c("b0","b1","USD.sigma", "b0.sigma"), n.iter=50000, thin=1)
 output3pred = coda.samples(jags3, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 output3ppc = coda.samples(jags3, variable.names = c("p.sd","p.mean","disc"), n.iter=50000, thin=1)
-summary(output3)
-gelman.diag(output3)$psrf
-
-mcmc_areas(output3, prob=0.95)
-mcmc_areas(output3, prob=0.95, regex_pars=c("b1","b0\\[\\d*\\]"))
-mcmc_areas(output3, prob=0.95, regex_pars=c("b0\\[\\d*\\]"))
-
-bigout3 = data.frame(do.call(rbind,output3))
-plot(density(bigout3$b0.1.-bigout3$b0.2.))
-
 
 # Model 4 - Pooled Quadratic ----------------------------------------------
 { # Model 4
@@ -398,13 +372,6 @@ jags4 = jags.model(model4, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output4 = coda.samples(jags4, variable.names = c("b0","b1","b2","USD.sigma"), n.iter=50000, thin=1)
 output4pred = coda.samples(jags4, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 output4ppc = coda.samples(jags4, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
-summary(output4)
-gelman.diag(output4)$psrf
-gelman.diag(output4)$mpsrf
-
-mcmc_areas(output4, prob=0.95)
-mcmc_areas(output4, prob=0.95, regex_pars=c("b1","b2"))
-
 
 # Model 5 - Slope Quadratic -----------------------------------------------
 { # Model 5
@@ -448,12 +415,6 @@ jags5 = jags.model(model5, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output5 = coda.samples(jags5, variable.names = c("b0","b1","b2","USD.sigma", "b1.sigma"), n.iter=50000, thin=1)
 #output5pred = coda.samples(jags5, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 #output5ppc = coda.samples(jags5, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
-summary(output5)
-gelman.diag(output5)$psrf
-gelman.diag(output5)$mpsrf
-
-mcmc_areas(output5, prob=0.95)
-mcmc_areas(output5, prob=0.95, regex_pars=c("b1","b2"))
 
 # Model 6 - Squared Quadratic -----------------------------------------------
 { # Model 6
@@ -497,13 +458,6 @@ jags6 = jags.model(model6, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output6 = coda.samples(jags6, variable.names = c("b0","b1","b2","USD.sigma", "b2.sigma"), n.iter=50000, thin=1)
 #output6pred = coda.samples(jags6, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 #output6ppc = coda.samples(jags6, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
-summary(output6)
-gelman.diag(output6)$psrf
-gelman.diag(output6)$mpsrf
-
-mcmc_areas(output6, prob=0.95)
-mcmc_areas(output6, prob=0.95, regex_pars=c("b1","b2"))
-mcmc_areas(output6, prob=0.95, regex_pars=c("b2"))
 
 # Model 7 - Intercept Quadratic -----------------------------------------------
 { # Model 7
@@ -547,13 +501,6 @@ jags7 = jags.model(model7, data = append(data,esvDat), n.chains = 3, n.adapt = 5
 output7 = coda.samples(jags7, variable.names = c("b0","b1","b2","USD.sigma", "b0.sigma"), n.iter=50000, thin=1)
 #output7pred = coda.samples(jags7, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
 #output7ppc = coda.samples(jags7, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
-summary(output7)
-gelman.diag(output7)$psrf
-gelman.diag(output7)$mpsrf
-
-mcmc_areas(output7, prob=0.95)
-mcmc_areas(output7, prob=0.95, regex_pars=c("b1","b2"))
-mcmc_areas(output7, prob=0.95, regex_pars=c("b0\\["))
 
 # Analysis ----------------------------------------------------------------
 
