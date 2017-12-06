@@ -1,1 +1,5 @@
+*.xls
+*.txt
+*.RData
 conversionDat.txt
+

@@ -4,8 +4,8 @@ library(rvest)
 library(lubridate)
 library(dplyr)
 
-esvDat = read.delim('TEEB.txt') %>%
-  filter(Biome %in% c('Marine','Coastal','Coral Reefs','Coastal wetlands')) %>%
+esvDat = read.delim('TEEB2.txt') %>%
+  filter(Biome %in% c('Coastal','Coastal wetlands')) %>% #,'Coral Reefs','Marine',)) %>% 
   filter(Valuation.Method != 'Benefit Transfer') %>%
   filter(!Continent %in% c("Various", "World")) %>%
   #Generate country codes for conversion to USD2007; cleanup as well
@@ -23,6 +23,9 @@ tryCatch({
   conversionDat = read.delim("conversionDat.txt")
 },
 error = function(e) {
+  conversionDat <<- data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), days=numeric(0), stringsAsFactors=FALSE)
+},
+warning = function(e) {
   conversionDat <<- data.frame(curr1=character(0), curr2=character(0), year=integer(0), minRate=numeric(0), avgRate=numeric(0), maxRate=numeric(0), days=numeric(0), stringsAsFactors=FALSE)
 })
 
@@ -72,6 +75,10 @@ for(i in 1:nrow(esvDat)){
     {
       if(esvDat[i,]$ISO != "USD")
         conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$data$minRate,convRate$data$avgRate,convRate$data$maxRate,convRate$data$days)
+<<<<<<< HEAD
+      write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
+=======
+>>>>>>> e180fec0bca9ba79ca238ab8c82c351a19068455
     }
   }
 }
@@ -80,6 +87,7 @@ write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE
 #USD inflation (http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
 #Updated download link: https://fred.stlouisfed.org/series/CPIAUCSL
 monthlyInflation = read.csv("CPIAUCSL.csv", header = TRUE)
+names(monthlyInflation) = c("DATE", "CPIAUCSL")
 monthlyInflation$cpi_year = year(monthlyInflation$DATE)
 yearlyInflation = monthlyInflation %>% group_by(cpi_year) %>% summarize(cpi = mean(CPIAUCSL))
 
