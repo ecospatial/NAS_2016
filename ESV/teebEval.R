@@ -220,7 +220,8 @@ cbind(type,rSq,int,xCoef,xSqCoef,xCuCoef)
       logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
       USD.mu[i] <- b0 + b1*ServiceArea[i]
       logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-      discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+      errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
     }
     b0 ~ dnorm(0, 1/1E6)
     b1 ~ dnorm(0, 1/1E6)
@@ -236,7 +237,9 @@ cbind(type,rSq,int,xCoef,xSqCoef,xCuCoef)
     mean.sim<-mean(logUSDpred[])
     p.mean<-step(mean.sim-mean.data)
 
-    disc <- sum(discrepancy[])
+    disc<-sum(errsq[])
+    discPred<-sum(errsqpred[])
+    p.disc<-step(discPred-disc)
   }
 ")
 }
@@ -257,7 +260,8 @@ output1ppc = coda.samples(jags1, variable.names = c("p.sd","p.mean","disc"), n.i
       logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
       USD.mu[i] <- b0 + b1[PeerReviewed[i]]*logServiceArea[i]
       logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-      discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+      errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
     }
     b0 ~ dnorm(0, 1/1E6)
     USD.sigma ~ dunif(0, 1E6)
@@ -281,7 +285,9 @@ output1ppc = coda.samples(jags1, variable.names = c("p.sd","p.mean","disc"), n.i
     mean.sim<-mean(logUSDpred[])
     p.mean<-step(mean.sim-mean.data)
 
-    disc <- sum(discrepancy[])
+    disc<-sum(errsq[])
+    discPred<-sum(errsqpred[])
+    p.disc<-step(discPred-disc)
   }
 ")
 }
@@ -301,7 +307,8 @@ output2ppc = coda.samples(jags2, variable.names = c("p.sd","p.mean","disc"), n.i
       logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
       USD.mu[i] <- b0[PeerReviewed[i]] + b1*logServiceArea[i]
       logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-      discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+      errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
     }
     b1 ~ dnorm(0, 1/1E6)
     USD.sigma ~ dunif(0, 1E6)
@@ -325,7 +332,9 @@ output2ppc = coda.samples(jags2, variable.names = c("p.sd","p.mean","disc"), n.i
     mean.sim<-mean(logUSDpred[])
     p.mean<-step(mean.sim-mean.data)
 
-    disc <- sum(discrepancy[])
+    disc<-sum(errsq[])
+    discPred<-sum(errsqpred[])
+    p.disc<-step(discPred-disc)
   }
 ")
 }
@@ -345,7 +354,8 @@ output3ppc = coda.samples(jags3, variable.names = c("p.sd","p.mean","disc"), n.i
         logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
         USD.mu[i] <- b0 + b1*logServiceArea[i] + b2*lgSaSq[i]
         logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+        errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+        errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
       }
       b0 ~ dnorm(0, 1/1E6)
       b1 ~ dnorm(0, 1/1E6)
@@ -361,8 +371,10 @@ output3ppc = coda.samples(jags3, variable.names = c("p.sd","p.mean","disc"), n.i
       mean.data<-mean(logUSD2007[])
       mean.sim<-mean(logUSDpred[])
       p.mean<-step(mean.sim-mean.data)
-      
-      #disc <- sum(discrepancy[])
+
+      disc<-sum(errsq[])
+      discPred<-sum(errsqpred[])
+      p.disc<-step(discPred-disc)
     }
     ")
 }
@@ -382,7 +394,8 @@ output4ppc = coda.samples(jags4, variable.names = c("p.sd","p.mean"), n.iter=500
         logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
         USD.mu[i] <- b0 + b1[PeerReviewed[i]]*logServiceArea[i] + b2*lgSaSq[i]
         logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+        errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+        errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
       }
       b0 ~ dnorm(0, 1/1E6)
       for(i in 1:2)
@@ -404,8 +417,10 @@ output4ppc = coda.samples(jags4, variable.names = c("p.sd","p.mean"), n.iter=500
       mean.data<-mean(logUSD2007[])
       mean.sim<-mean(logUSDpred[])
       p.mean<-step(mean.sim-mean.data)
-      
-      #disc <- sum(discrepancy[])
+
+      disc<-sum(errsq[])
+      discPred<-sum(errsqpred[])
+      p.disc<-step(discPred-disc)
     }
     ")
 }
@@ -413,8 +428,8 @@ output4ppc = coda.samples(jags4, variable.names = c("p.sd","p.mean"), n.iter=500
 data = list(N = nrow(esvDat))
 jags5 = jags.model(model5, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
 output5 = coda.samples(jags5, variable.names = c("b0","b1","b2","USD.sigma", "b1.sigma"), n.iter=50000, thin=1)
-#output5pred = coda.samples(jags5, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
-#output5ppc = coda.samples(jags5, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+output5pred = coda.samples(jags5, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+output5ppc = coda.samples(jags5, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
 
 # Model 6 - Squared Quadratic -----------------------------------------------
 { # Model 6
@@ -424,8 +439,9 @@ output5 = coda.samples(jags5, variable.names = c("b0","b1","b2","USD.sigma", "b1
       {
         logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
         USD.mu[i] <- b0 + b1*logServiceArea[i] + b2[PeerReviewed[i]]*lgSaSq[i]
-        #logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+        logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
+        errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+        errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
       }
       b0 ~ dnorm(0, 1/1E6)
       b1 ~ dnorm(0, 1/1E6)
@@ -440,15 +456,17 @@ output5 = coda.samples(jags5, variable.names = c("b0","b1","b2","USD.sigma", "b1
       USD.tau <- 1/pow(USD.sigma,2)
       
       #PPCs
-      #sd.data<-sd(logUSD2007[])
-      #sd.sim<-sd(logUSDpred[])
-      #p.sd<-step(sd.sim-sd.data)
+      sd.data<-sd(logUSD2007[])
+      sd.sim<-sd(logUSDpred[])
+      p.sd<-step(sd.sim-sd.data)
       
-      #mean.data<-mean(logUSD2007[])
-      #mean.sim<-mean(logUSDpred[])
-      #p.mean<-step(mean.sim-mean.data)
-      
-      #disc <- sum(discrepancy[])
+      mean.data<-mean(logUSD2007[])
+      mean.sim<-mean(logUSDpred[])
+      p.mean<-step(mean.sim-mean.data)
+
+      disc<-sum(errsq[])
+      discPred<-sum(errsqpred[])
+      p.disc<-step(discPred-disc)
     }
     ")
 }
@@ -456,8 +474,8 @@ output5 = coda.samples(jags5, variable.names = c("b0","b1","b2","USD.sigma", "b1
 data = list(N = nrow(esvDat))
 jags6 = jags.model(model6, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
 output6 = coda.samples(jags6, variable.names = c("b0","b1","b2","USD.sigma", "b2.sigma"), n.iter=50000, thin=1)
-#output6pred = coda.samples(jags6, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
-#output6ppc = coda.samples(jags6, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+output6pred = coda.samples(jags6, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+output6ppc = coda.samples(jags6, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
 
 # Model 7 - Intercept Quadratic -----------------------------------------------
 { # Model 7
@@ -467,8 +485,9 @@ output6 = coda.samples(jags6, variable.names = c("b0","b1","b2","USD.sigma", "b2
       {
         logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
         USD.mu[i] <- b0[PeerReviewed[i]] + b1*logServiceArea[i] + b2*lgSaSq[i]
-        #logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
-        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+        logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
+        errsq[i] <- pow(logUSD2007[i]-USD.mu[i],2)
+        errsqpred[i] <- pow(logUSDpred[i]-USD.mu[i],2)
       }
       for(i in 1:2)
       {
@@ -483,15 +502,17 @@ output6 = coda.samples(jags6, variable.names = c("b0","b1","b2","USD.sigma", "b2
       USD.tau <- 1/pow(USD.sigma,2)
       
       #PPCs
-      #sd.data<-sd(logUSD2007[])
-      #sd.sim<-sd(logUSDpred[])
-      #p.sd<-step(sd.sim-sd.data)
+      sd.data<-sd(logUSD2007[])
+      sd.sim<-sd(logUSDpred[])
+      p.sd<-step(sd.sim-sd.data)
       
-      #mean.data<-mean(logUSD2007[])
-      #mean.sim<-mean(logUSDpred[])
-      #p.mean<-step(mean.sim-mean.data)
-      
-      #disc <- sum(discrepancy[])
+      mean.data<-mean(logUSD2007[])
+      mean.sim<-mean(logUSDpred[])
+      p.mean<-step(mean.sim-mean.data)
+
+      disc<-sum(errsq[])
+      discPred<-sum(errsqpred[])
+      p.disc<-step(discPred-disc)
     }
     ")
 }
@@ -499,8 +520,8 @@ output6 = coda.samples(jags6, variable.names = c("b0","b1","b2","USD.sigma", "b2
 data = list(N = nrow(esvDat))
 jags7 = jags.model(model7, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
 output7 = coda.samples(jags7, variable.names = c("b0","b1","b2","USD.sigma", "b0.sigma"), n.iter=50000, thin=1)
-#output7pred = coda.samples(jags7, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
-#output7ppc = coda.samples(jags7, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+output7pred = coda.samples(jags7, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+output7ppc = coda.samples(jags7, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
 
 # Analysis ----------------------------------------------------------------
 
