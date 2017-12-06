@@ -75,10 +75,7 @@ for(i in 1:nrow(esvDat)){
     {
       if(esvDat[i,]$ISO != "USD")
         conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$data$minRate,convRate$data$avgRate,convRate$data$maxRate,convRate$data$days)
-<<<<<<< HEAD
       write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
-=======
->>>>>>> e180fec0bca9ba79ca238ab8c82c351a19068455
     }
   }
 }
