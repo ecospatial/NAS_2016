@@ -6,7 +6,6 @@ library(dplyr)
 library(rjags)
 library(bayesplot)
 
-
 # Set Focus ---------------------------------------------------------------
 
 #Set to "all" to evaluate all studies, or "cw" for only coastal wetlands
@@ -357,6 +356,200 @@ mcmc_areas(output3, prob=0.95, regex_pars=c("b0\\[\\d*\\]"))
 bigout3 = data.frame(do.call(rbind,output3))
 plot(density(bigout3$b0.1.-bigout3$b0.2.))
 
+
+# Model 4 - Pooled Quadratic ----------------------------------------------
+{ # Model 4
+  model4 = textConnection("
+    model {
+      for(i in 1:N)
+      {
+        logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
+        USD.mu[i] <- b0 + b1*logServiceArea[i] + b2*lgSaSq[i]
+        logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
+        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      }
+      b0 ~ dnorm(0, 1/1E6)
+      b1 ~ dnorm(0, 1/1E6)
+      b2 ~ dnorm(0, 1/1E6)
+      USD.sigma ~ dunif(0, 1E6)
+      USD.tau <- 1/pow(USD.sigma,2)
+      
+      #PPCs
+      sd.data<-sd(logUSD2007[])
+      sd.sim<-sd(logUSDpred[])
+      p.sd<-step(sd.sim-sd.data)
+      
+      mean.data<-mean(logUSD2007[])
+      mean.sim<-mean(logUSDpred[])
+      p.mean<-step(mean.sim-mean.data)
+      
+      #disc <- sum(discrepancy[])
+    }
+    ")
+}
+
+data = list(N = nrow(esvDat))
+jags4 = jags.model(model4, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
+output4 = coda.samples(jags4, variable.names = c("b0","b1","b2","USD.sigma"), n.iter=50000, thin=1)
+output4pred = coda.samples(jags4, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+output4ppc = coda.samples(jags4, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+summary(output4)
+gelman.diag(output4)$psrf
+gelman.diag(output4)$mpsrf
+
+mcmc_areas(output4, prob=0.95)
+mcmc_areas(output4, prob=0.95, regex_pars=c("b1","b2"))
+
+
+# Model 5 - Slope Quadratic -----------------------------------------------
+{ # Model 5
+  model5 = textConnection("
+    model {
+      for(i in 1:N)
+      {
+        logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
+        USD.mu[i] <- b0 + b1[PeerReviewed[i]]*logServiceArea[i] + b2*lgSaSq[i]
+        logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
+        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      }
+      b0 ~ dnorm(0, 1/1E6)
+      for(i in 1:2)
+      {
+        b1[i] ~ dnorm(b1.mu, b1.tau)
+      }
+      b1.mu ~ dnorm(0, 1/1E6)
+      b1.sigma ~ dunif(0, 1E6)
+      b1.tau <- 1/pow(b1.sigma,2)
+      b2 ~ dnorm(0, 1/1E6)
+      USD.sigma ~ dunif(0, 1E6)
+      USD.tau <- 1/pow(USD.sigma,2)
+      
+      #PPCs
+      sd.data<-sd(logUSD2007[])
+      sd.sim<-sd(logUSDpred[])
+      p.sd<-step(sd.sim-sd.data)
+      
+      mean.data<-mean(logUSD2007[])
+      mean.sim<-mean(logUSDpred[])
+      p.mean<-step(mean.sim-mean.data)
+      
+      #disc <- sum(discrepancy[])
+    }
+    ")
+}
+
+data = list(N = nrow(esvDat))
+jags5 = jags.model(model5, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
+output5 = coda.samples(jags5, variable.names = c("b0","b1","b2","USD.sigma", "b1.sigma"), n.iter=50000, thin=1)
+#output5pred = coda.samples(jags5, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+#output5ppc = coda.samples(jags5, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+summary(output5)
+gelman.diag(output5)$psrf
+gelman.diag(output5)$mpsrf
+
+mcmc_areas(output5, prob=0.95)
+mcmc_areas(output5, prob=0.95, regex_pars=c("b1","b2"))
+
+# Model 6 - Squared Quadratic -----------------------------------------------
+{ # Model 6
+  model6 = textConnection("
+    model {
+      for(i in 1:N)
+      {
+        logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
+        USD.mu[i] <- b0 + b1*logServiceArea[i] + b2[PeerReviewed[i]]*lgSaSq[i]
+        #logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
+        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      }
+      b0 ~ dnorm(0, 1/1E6)
+      b1 ~ dnorm(0, 1/1E6)
+      for(i in 1:2)
+      {
+        b2[i] ~ dnorm(b2.mu, b2.tau)
+      }
+      b2.mu ~ dnorm(0, 1/1E6)
+      b2.sigma ~ dunif(0, 1E6)
+      b2.tau <- 1/pow(b2.sigma,2)
+      USD.sigma ~ dunif(0, 1E6)
+      USD.tau <- 1/pow(USD.sigma,2)
+      
+      #PPCs
+      #sd.data<-sd(logUSD2007[])
+      #sd.sim<-sd(logUSDpred[])
+      #p.sd<-step(sd.sim-sd.data)
+      
+      #mean.data<-mean(logUSD2007[])
+      #mean.sim<-mean(logUSDpred[])
+      #p.mean<-step(mean.sim-mean.data)
+      
+      #disc <- sum(discrepancy[])
+    }
+    ")
+}
+
+data = list(N = nrow(esvDat))
+jags6 = jags.model(model6, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
+output6 = coda.samples(jags6, variable.names = c("b0","b1","b2","USD.sigma", "b2.sigma"), n.iter=50000, thin=1)
+#output6pred = coda.samples(jags6, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+#output6ppc = coda.samples(jags6, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+summary(output6)
+gelman.diag(output6)$psrf
+gelman.diag(output6)$mpsrf
+
+mcmc_areas(output6, prob=0.95)
+mcmc_areas(output6, prob=0.95, regex_pars=c("b1","b2"))
+mcmc_areas(output6, prob=0.95, regex_pars=c("b2"))
+
+# Model 7 - Intercept Quadratic -----------------------------------------------
+{ # Model 7
+  model7 = textConnection("
+    model {
+      for(i in 1:N)
+      {
+        logUSD2007[i] ~ dnorm(USD.mu[i], USD.tau)
+        USD.mu[i] <- b0[PeerReviewed[i]] + b1*logServiceArea[i] + b2*lgSaSq[i]
+        #logUSDpred[i] ~ dnorm(USD.mu[i], USD.tau)
+        #discrepancy[i] <- pow(logUSD2007[i]-logUSDpred[i],2)
+      }
+      for(i in 1:2)
+      {
+        b0[i] ~ dnorm(b0.mu, b0.tau)
+      }
+      b0.mu ~ dnorm(0, 1/1E6)
+      b0.sigma ~ dunif(0, 1E6)
+      b0.tau <- 1/pow(b0.sigma,2)
+      b1 ~ dnorm(0, 1/1E6)
+      b2 ~ dnorm(0, 1/1E6)
+      USD.sigma ~ dunif(0, 1E6)
+      USD.tau <- 1/pow(USD.sigma,2)
+      
+      #PPCs
+      #sd.data<-sd(logUSD2007[])
+      #sd.sim<-sd(logUSDpred[])
+      #p.sd<-step(sd.sim-sd.data)
+      
+      #mean.data<-mean(logUSD2007[])
+      #mean.sim<-mean(logUSDpred[])
+      #p.mean<-step(mean.sim-mean.data)
+      
+      #disc <- sum(discrepancy[])
+    }
+    ")
+}
+
+data = list(N = nrow(esvDat))
+jags7 = jags.model(model7, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
+output7 = coda.samples(jags7, variable.names = c("b0","b1","b2","USD.sigma", "b0.sigma"), n.iter=50000, thin=1)
+#output7pred = coda.samples(jags7, variable.names = c("logUSDpred"), n.iter=50000, thin=1)
+#output7ppc = coda.samples(jags7, variable.names = c("p.sd","p.mean"), n.iter=50000, thin=1)
+summary(output7)
+gelman.diag(output7)$psrf
+gelman.diag(output7)$mpsrf
+
+mcmc_areas(output7, prob=0.95)
+mcmc_areas(output7, prob=0.95, regex_pars=c("b1","b2"))
+mcmc_areas(output7, prob=0.95, regex_pars=c("b0\\["))
+
 # Analysis ----------------------------------------------------------------
 
 #par(mar=c(5,4.2,5,0))
@@ -397,5 +590,3 @@ mcmc_areas(output2,prob=0.95,regex_pars=c("b.\\[\\d*\\]"))
 mcmc_areas(output3,prob=0.95,regex_pars=c("b1","b.\\[\\d*\\]","USD.sigma"))
 mcmc_areas(output2,prob=0.95,regex_pars=c("USD.sigma","b1.sigma"))
 mcmc_areas(output3,prob=0.95,regex_pars=c("USD.sigma","b0.sigma"))
-
-
