@@ -6,6 +6,11 @@ library(dplyr)
 library(rjags)
 library(bayesplot)
 
+# Helper Functions --------------------------------------------------------
+mcmc_areas95 = function(x, pars = character(), regex_pars = character(), transformations = list(), ..., prob = 0.95, prob_outer = 1, point_est = c("median","mean","none"), rhat = numeric(), bw = NULL, adjust = NULL, kernel = NULL){
+  mcmc_areas(x,pars,regex_pars,transformations,...,prob=0.95,prob_outer,point_est,rhat,bw,adjust,kernel)
+}
+
 # Set Focus ---------------------------------------------------------------
 
 #Set to "all" to evaluate all studies, or "cw" for only coastal wetlands
