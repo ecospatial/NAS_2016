@@ -165,7 +165,8 @@ points(log(USD2007)~log(ServiceArea), data=esvDat[esvDat$PeerReviewed == 1,],col
 boxplot(USD2007~PeerReviewed, data=esvDat, names=c("No Peer Review", "Peer Review"), col=c("blue","red"), ylim=c(0,9e3), cex.axis=1.5)
 boxplot(log(USD2007)~PeerReviewed, data=esvDat, names=c("No Peer Review", "Peer Review"), col=c("blue","red"), cex.axis=1.5)
 
-# Model 1 -----------------------------------------------------------------
+
+# Model 1 - Pooled --------------------------------------------------------
 { # Model 1
   model1 = textConnection("
   model {
@@ -207,7 +208,8 @@ mcmc_areas(output1, prob=0.95)
 mcmc_areas(output1, prob=0.95, regex_pars=c("b1"))
 
 
-# Model 2 -----------------------------------------------------------------
+
+# Model 2 - Slope ---------------------------------------------------------
 { # Model 2
   model2 = textConnection("
   model {
@@ -260,7 +262,8 @@ mcmc_areas(output2, prob=0.95, regex_pars=c("b1\\[\\d*\\]"))
 bigout2 = data.frame(do.call(rbind,output2))
 plot(density(bigout2$b1.1.-bigout2$b1.2.))
 
-# Model 3 -----------------------------------------------------------------
+
+# Model 3 - Intercept -----------------------------------------------------
 { # Model 3
   model3 = textConnection("
   model {
@@ -312,7 +315,6 @@ mcmc_areas(output3, prob=0.95, regex_pars=c("b0\\[\\d*\\]"))
 
 bigout3 = data.frame(do.call(rbind,output3))
 plot(density(bigout3$b0.1.-bigout3$b0.2.))
-
 
 # Analysis ----------------------------------------------------------------
 
