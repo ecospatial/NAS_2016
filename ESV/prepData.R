@@ -75,10 +75,14 @@ for(i in 1:nrow(esvDat)){
     {
       if(esvDat[i,]$ISO != "USD")
         conversionDat[nrow(conversionDat)+1,] = c("USD",esvDat[i,]$ISO,year,convRate$data$minRate,convRate$data$avgRate,convRate$data$maxRate,convRate$data$days)
+<<<<<<< HEAD
       write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
+=======
+>>>>>>> e180fec0bca9ba79ca238ab8c82c351a19068455
     }
   }
 }
+write.table(conversionDat, "conversionDat.txt", row.names = FALSE, quote = FALSE, sep = "\t")
 
 #USD inflation (http://stackoverflow.com/questions/12590180/inflation-adjusted-prices-package)
 #Updated download link: https://fred.stlouisfed.org/series/CPIAUCSL
@@ -100,8 +104,6 @@ esvDat$USD2007 = esvDat$Value
 for(i in 1:nrow(esvDat)){
   if (!esvDat[i,]$standardized.2007.value.)
     esvDat[i,]$USD2007 = esvDat[i,]$uninflUSD*adjInflation(esvDat[i,]$Year.Of.Validation, 2007)
-  else
-    esvDat[i,]$USD2007 = esvDat[i,]$Value
 }
 
 #Salvador Colon https://books.google.com/books?id=XC8k3GXUKmoC&pg=PA35&lpg=PA35&dq=exchange+rates+1998+salvador+colon++svc&source=bl&ots=XcGUqbF28A&sig=xvXLFuQWQyKL7-J86KZ6_B5cAbM&hl=en&sa=X&ved=0ahUKEwixwZbI-6XPAhXI7D4KHRiNDJY4ChDoAQgnMAI#v=onepage&q=exchange%20rates%201998%20salvador%20colon%20%20svc&f=false
@@ -116,3 +118,8 @@ for(i in 1:nrow(esvDat)){
 #write.table(esvDat, "TEEB-NoBT-USD2007.txt", row.names = FALSE, quote = FALSE, sep="\t")
 
 
+
+
+
+
+source("./population/getPop.R")
