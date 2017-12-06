@@ -150,12 +150,15 @@ for(i in 1:nrow(esvDat)){
 #Prep for models (done after finding log relationships below)
 esvDat$logUSD2007 = log(esvDat$USD2007)
 esvDat$logServiceArea = log(esvDat$ServiceArea)
+esvDat$lgSaSq = esvDat$logServiceArea^2
+esvDat$lgSaCu = esvDat$logServiceArea^3
 
 
 # Prelim Analysis ---------------------------------------------------------
 
 plot(log(USD2007)~log(ServiceArea), data=esvDat)
 lmod1 = lm(log(USD2007)~log(ServiceArea), data=esvDat)
+abline(lmod1,col="red")
 summary(lmod1)
 
 plot(log(USD2007)~log(ServiceArea), data=esvDat, cex.axis=1.5, cex.lab=1.5)
@@ -164,6 +167,44 @@ points(log(USD2007)~log(ServiceArea), data=esvDat[esvDat$PeerReviewed == 1,],col
 #legend(15.75, 22.65, c("Peer", "No Peer"), col=c("red", "blue"), lty=1, cex=1.35)
 boxplot(USD2007~PeerReviewed, data=esvDat, names=c("No Peer Review", "Peer Review"), col=c("blue","red"), ylim=c(0,9e3), cex.axis=1.5)
 boxplot(log(USD2007)~PeerReviewed, data=esvDat, names=c("No Peer Review", "Peer Review"), col=c("blue","red"), cex.axis=1.5)
+
+qmod1 = lm(logUSD2007~lgSaSq, data=esvDat)
+qmod2 = lm(logUSD2007~logServiceArea+lgSaSq, data=esvDat)
+qmod3 = lm(logUSD2007~logServiceArea+lgSaSq+lgSaCu, data=esvDat)
+
+plot(logUSD2007~logServiceArea,data=esvDat,pch=".")
+pred1=predict(qmod1, se.fit=TRUE)
+ord=order(esvDat$logServiceArea)
+lines(pred1$fit[ord]~esvDat$logServiceArea[ord], col="red")
+lines(pred1$fit[ord]+2*pred1$se.fit[ord]~esvDat$logServiceArea[ord], col="red",lty=2)
+lines(pred1$fit[ord]-2*pred1$se.fit[ord]~esvDat$logServiceArea[ord], col="red",lty=2)
+summary(qmod1)
+
+plot(logUSD2007~logServiceArea,data=esvDat,pch=".")
+pred2=predict(qmod2, se.fit=TRUE)
+ord=order(esvDat$logServiceArea)
+lines(pred2$fit[ord]~esvDat$logServiceArea[ord], col="red")
+lines(pred2$fit[ord]+2*pred2$se.fit[ord]~esvDat$logServiceArea[ord], col="red",lty=2)
+lines(pred2$fit[ord]-2*pred2$se.fit[ord]~esvDat$logServiceArea[ord], col="red",lty=2)
+summary(qmod2)
+
+plot(logUSD2007~logServiceArea,data=esvDat,pch=".")
+pred3=predict(qmod3, se.fit=TRUE)
+ord=order(esvDat$logServiceArea)
+lines(pred3$fit[ord]~esvDat$logServiceArea[ord], col="red")
+lines(pred3$fit[ord]+2*pred3$se.fit[ord]~esvDat$logServiceArea[ord], col="red",lty=2)
+lines(pred3$fit[ord]-2*pred3$se.fit[ord]~esvDat$logServiceArea[ord], col="red",lty=2)
+summary(qmod3)
+
+type=c("linear","parabolic","quadratic","quadratic,3rd pow")
+models=list(lmod1,qmod1,qmod2,qmod3)
+rSq = lapply(models,FUN=function(x){   summary(x)$r.squared   })
+int = lapply(models,FUN=function(x){   coef(x)["(Intercept)"]   })
+xCoef = lapply(models,FUN=function(x){   coef(x)["logServiceArea"]   })
+xSqCoef = lapply(models,FUN=function(x){   coef(x)["lgSaSq"]   })
+xCuCoef = lapply(models,FUN=function(x){   coef(x)["lgSaCu"]   })
+cbind(type,rSq,int,xCoef,xSqCoef,xCuCoef)
+
 
 
 # Model 1 - Pooled --------------------------------------------------------
