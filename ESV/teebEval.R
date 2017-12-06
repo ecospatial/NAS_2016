@@ -7,6 +7,11 @@ library(rjags)
 library(bayesplot)
 
 
+# Set Focus ---------------------------------------------------------------
+
+#Set to "all" to evaluate all studies, or "cw" for only coastal wetlands
+esvType = "all"
+
 # Data Prep ---------------------------------------------------------------
 
 esvDat = read.delim("TEEB2.txt")
@@ -17,36 +22,39 @@ journalTxt = grep("[jJ]ournal", esvDat$Title, perl=TRUE) #finds Journal or journ
 esvDat$PeerReviewed = rep(1, nrow(esvDat))
 esvDat$PeerReviewed[journalFmt] = 2
 
-
-#All biomes
-esvDat = esvDat %>%
-  filter(Valuation.Method != 'Benefit Transfer') %>%
-    # filter(!Continent %in% c("Various", "World")) %>%
-    #Generate country codes for conversion to USD2007; cleanup as well
-    mutate(ISO = substring(Unit,1,3)) %>%
-    mutate(ISO = sub('\\$','D', ISO)) %>%
-    mutate(ISO = sub('Rie','KHR', ISO)) %>%
-    #clean up value of null refs/empty values
-    filter(!ServiceArea %in% c(NA,"#REF!")) %>%
-    filter(!Value %in% c(NA,"#REF!")) %>%
-    mutate(Value = as.numeric(levels(Value))[Value]) %>%
-    filter(Value > 0)
-
-#Coastal wetlands
-esvDat = esvDat %>%
-  filter(Biome %in% c('Coastal','Coastal wetlands')) %>% #,'Coral Reefs','Marine',)) %>%
-  filter(Valuation.Method != 'Benefit Transfer') %>%
-  filter(!Continent %in% c("Various", "World")) %>%
-  #Generate country codes for conversion to USD2007; cleanup as well
-  mutate(ISO = substring(Unit,1,3)) %>%
-  mutate(ISO = sub('\\$','D', ISO)) %>%
-  mutate(ISO = sub('Rie','KHR', ISO)) %>%
-  #clean up value of null refs/empty values
-  filter(!ServiceArea %in% c(NA,"#REF!")) %>%
-  filter(!Value %in% c(NA,"#REF!")) %>%
-  mutate(Value = as.numeric(levels(Value))[Value]) %>%
-  filter(Value > 0)
-
+switch(esvType,
+       all={
+         #All biomes
+         esvDat = esvDat %>%
+           filter(Valuation.Method != 'Benefit Transfer') %>%
+           # filter(!Continent %in% c("Various", "World")) %>%
+           #Generate country codes for conversion to USD2007; cleanup as well
+           mutate(ISO = substring(Unit,1,3)) %>%
+           mutate(ISO = sub('\\$','D', ISO)) %>%
+           mutate(ISO = sub('Rie','KHR', ISO)) %>%
+           #clean up value of null refs/empty values
+           filter(!ServiceArea %in% c(NA,"#REF!")) %>%
+           filter(!Value %in% c(NA,"#REF!")) %>%
+           mutate(Value = as.numeric(levels(Value))[Value]) %>%
+           filter(Value > 0)
+       },
+       cw={
+         #Coastal wetlands
+         esvDat = esvDat %>%
+           filter(Biome %in% c('Coastal','Coastal wetlands')) %>% #,'Coral Reefs','Marine',)) %>%
+           filter(Valuation.Method != 'Benefit Transfer') %>%
+           filter(!Continent %in% c("Various", "World")) %>%
+           #Generate country codes for conversion to USD2007; cleanup as well
+           mutate(ISO = substring(Unit,1,3)) %>%
+           mutate(ISO = sub('\\$','D', ISO)) %>%
+           mutate(ISO = sub('Rie','KHR', ISO)) %>%
+           #clean up value of null refs/empty values
+           filter(!ServiceArea %in% c(NA,"#REF!")) %>%
+           filter(!Value %in% c(NA,"#REF!")) %>%
+           mutate(Value = as.numeric(levels(Value))[Value]) %>%
+           filter(Value > 0)
+       }
+)
 
 #Currency conversion (https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/)
 url="http://fxtop.com/en/historical-exchange-rates.php?A=1&C1=%s&C2=%s&YA=1&DD1=%s&MM1=%s&YYYY1=%s&B=1&P=&I=1&DD2=%s&MM2=%s&YYYY2=%s&btnOK=Go%%21"
