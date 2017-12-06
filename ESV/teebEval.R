@@ -154,8 +154,6 @@ esvDat$logServiceArea = log(esvDat$ServiceArea)
 
 # Prelim Analysis ---------------------------------------------------------
 
-
-
 plot(log(USD2007)~log(ServiceArea), data=esvDat)
 lmod1 = lm(log(USD2007)~log(ServiceArea), data=esvDat)
 summary(lmod1)
@@ -166,44 +164,6 @@ points(log(USD2007)~log(ServiceArea), data=esvDat[esvDat$PeerReviewed == 1,],col
 #legend(15.75, 22.65, c("Peer", "No Peer"), col=c("red", "blue"), lty=1, cex=1.35)
 boxplot(USD2007~PeerReviewed, data=esvDat, names=c("No Peer Review", "Peer Review"), col=c("blue","red"), ylim=c(0,9e3), cex.axis=1.5)
 boxplot(log(USD2007)~PeerReviewed, data=esvDat, names=c("No Peer Review", "Peer Review"), col=c("blue","red"), cex.axis=1.5)
-
-
-
-# Model 0 -----------------------------------------------------------------
-{ # Model 0
-  model0 = textConnection("
-  model {
-    for(i in 1:N)
-    {
-      USD2007[i] ~ dlnorm(USD.mu[i], USD.tau)
-      USD.mu[i] <- b0 + b1[PeerReviewed[i]]*ServiceArea[i]
-    }
-    b0 ~ dnorm(0, 1/1E6)
-    USD.sigma ~ dunif(0, 1E6)
-    USD.tau <- 1/pow(USD.sigma,2)
-    
-    for(j in 1:2)
-    {
-      b1[j] ~ dnorm(b1.mu, b1.tau)
-    } 
-    
-    b1.mu ~ dnorm(0, 1/1E6)
-    b1.sigma ~ dunif(0, 1E6)
-    b1.tau <- 1/pow(b1.sigma,2)
-  }
-")
-}
-
-data = list(N = nrow(esvDat))
-jags0 = jags.model(model0, data = append(data,esvDat), n.chains = 3, n.adapt = 20000)
-output0 = coda.samples(jags0, variable.names = c("b0","b1","USD.sigma", "b1.sigma"), n.iter=10000, thin=1)
-summary(output0)
-gelman.diag(output0)$psrf
-
-mcmc_areas(output0, prob=0.95)
-mcmc_areas(output0, prob=0.95, regex_pars=c("b0","b1\\[\\d*\\]"))
-mcmc_areas(output0, prob=0.95, regex_pars=c("b1\\[\\d*\\]"))
-
 
 # Model 1 -----------------------------------------------------------------
 { # Model 1
