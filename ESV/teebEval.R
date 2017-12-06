@@ -12,6 +12,91 @@ mcmc_areas95 = function(x, pars = character(), regex_pars = character(), transfo
   mcmc_areas(x,pars,regex_pars,transformations,...,prob=0.95,prob_outer,point_est,rhat,bw,adjust,kernel)
 }
 
+combineChains = function(x, regex_pars=NULL) {
+  nChains = length(x)
+  varNames = names(output1[[1]][1,])
+  pars = varNames
+  if(!is.null(regex_pars))
+  {
+    pars = c()
+    for(reg in regex_pars)
+    {
+      pars = c(pars, varNames[regexpr(reg,varNames,perl=TRUE)!=-1])
+      pars = unique(pars)
+    }
+  }
+  
+  output = c()
+  for(i in 1:nChains){
+    a = as.data.frame(x[[i]])
+    output = rbind(output, a[pars])
+  }
+  
+  return(output)
+}
+
+plotTrace = function(x, regex_pars=NULL) {
+  nChains = length(x)
+  varNames = names(output1[[1]][1,])
+  pars = varNames
+  if(!is.null(regex_pars))
+  {
+    pars = c()
+    for(reg in regex_pars)
+    {
+      pars = c(pars, varNames[regexpr(reg,varNames,perl=TRUE)!=-1])
+      pars = unique(pars)
+    }
+  }
+  cols = palette(rainbow(nChains))
+  allChains = list()
+  for(p in pars){
+    firstplot=FALSE
+    v = which(names(x[[1]][1,])==p)
+    for(c in 1:nChains){
+      a = as.data.frame(x[[c]])
+      if(!firstplot)
+      {
+        plot(a[[p]], col=cols[c],type="l",ylab=p,xlab="Iteration")
+        firstplot=TRUE
+      }
+      else
+      {
+        lines(a[[p]],col=cols[c])
+      }
+      
+      allChains[[c]] = x[[c]][,v]
+    }
+    
+    title(paste0("rhat=",gelman.diag(mcmc.list(allChains))$psrf[1]))
+  }
+}
+
+plotDensity = function(x, regex_pars=NULL){
+  nChains = length(x)
+  varNames = names(output1[[1]][1,])
+  pars = varNames
+  if(!is.null(regex_pars))
+  {
+    pars = c()
+    for(reg in regex_pars)
+    {
+      pars = c(pars, varNames[regexpr(reg,varNames,perl=TRUE)!=-1])
+      pars = unique(pars)
+    }
+  }
+  
+  a = combineChains(x, pars)
+  for(p in pars){
+    m = sprintf("mean=%s, median=%s, 95%%CI=(%s,%s)",
+                format(mean(a[[p]]),digits=4),
+                format(median(a[[p]]),digits=4),
+                format(quantile(a[[p]],0.025),digits=4),
+                format(quantile(a[[p]],0.975),digits=4))
+    plot(density(a[[p]]), main = m)
+  }
+}
+
 # Set Focus ---------------------------------------------------------------
 
 #Set to "all" to evaluate all studies, or "cw" for only coastal wetlands
@@ -247,10 +332,9 @@ cbind(type,rSq,int,xCoef,xSqCoef,xCuCoef)
 
 data = list(N = nrow(esvDat))
 jags1 = jags.model(model1, data = append(data,esvDat), n.chains = 3, n.adapt = 50000)
-output1 = coda.samples.dic(jags1, variable.names = c("b0","b1","USD.sigma","logUSDpred","p.sd","p.mean","disc"), n.iter=100000, thin=1)
+output1 = coda.samples.dic(jags1, variable.names = c("b0","b1","USD.sigma","logUSDpred","p.sd","p.mean","disc"), n.iter=50000, thin=1)
 dic1 = output1$dic
 output1 = output1$samples
-
 
 # Model 2 - Slope ---------------------------------------------------------
 { # Model 2
