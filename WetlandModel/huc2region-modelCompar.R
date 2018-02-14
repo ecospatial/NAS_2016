@@ -1,3 +1,4 @@
+setwd("WetlandModel")
 
 library(rjags)
 library(sp)

@@ -1,3 +1,5 @@
+setwd("WetlandModel")
+
 library(RPostgreSQL)
 library(postGIStools)
 

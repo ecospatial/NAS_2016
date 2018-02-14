@@ -1,3 +1,5 @@
+setwd("WetlandModel")
+
 library(bayesplot)
 
 getCI = function(modelNo, ...){
