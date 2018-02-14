@@ -11,7 +11,7 @@ library(postGIStools)
 
 
 # Database Connection and Loading -----------------------------------------
-source("../DecisionSuppTool/mysqlcfg.R")
+source("../config/postgresqlcfg.R")
 if(exists("user") || exists("pw")) {  
   con <- dbConnect(PostgreSQL(), dbname = "postgiz", user = user,
                    host = "52.14.87.100", port = 5432,
@@ -25,7 +25,7 @@ wetloss = get_postgis_query(con, 'SELECT * FROM wetloss')
 inlandbuff = get_postgis_query(con, "SELECT * FROM thkbuffers", geom_name = "geom")
 inlandbuff@data = merge(inlandbuff@data, wetloss, by = "ORIG_FID")
 
-dbDisconnect(con2)
+dbDisconnect(con)
 
 
 # Combine Spatial. Geo, and Wet Data --------------------------------------
