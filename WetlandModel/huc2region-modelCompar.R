@@ -115,37 +115,3 @@ for(i in 1:nrow(models)){
         "Results\\DIC.txt",append=T)
   save(output,file=sprintf("Results\\%s.RData",i))
 }
-
-# 
-# write.table("modelNo\tfixed\trandom\tDIC","Results\\signif.txt", row.names=F, quote=F, sep="\t")
-# for(file in dir("Results")){
-#   load(file=sprintf("Results\\%s", file))
-#   modelNo = as.numeric(gsub(".RData","",file))
-#   summ = summary(output$samples)
-# 
-#   for(covar in params){
-#     covar = paste("b",covar,sep="")
-#     matches = grepl(covar,rownames(summ$quantiles))
-#     if(any(matches)){
-#       idx = which(matches)
-#       if (length(idx)>1){
-#         
-#       } else {
-#         sigs$fixed[covar] = c(sigs$fixed[covar],NA)
-#       }
-#     } else {
-#       sigs$random[covar]
-#     }
-#   }
-# 
-#   for(covar in summ$quantiles){
-#     prod = summ$quantiles[covar,5]*summ$quantiles[covar,1]
-#     signif = prod > 0
-#     random = grepl("\\[.\\]",covar)
-#     if(random){
-#       sigs$random[cov]
-#     } else {
-# 
-#     }
-#   }
-# }
