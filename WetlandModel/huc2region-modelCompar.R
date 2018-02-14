@@ -19,8 +19,6 @@ if(exists("user") || exists("pw")) {
   rm(pw);rm(user)
 }
 
-
-# TODO: Merge can likely be done on the database side
 wetloss = get_postgis_query(con, 'SELECT * FROM wetloss')
 inlandbuff = get_postgis_query(con, "SELECT * FROM thkbuffers", geom_name = "geom")
 inlandbuff@data = merge(inlandbuff@data, wetloss, by = "ORIG_FID")
