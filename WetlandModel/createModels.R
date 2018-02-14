@@ -1,3 +1,5 @@
+setwd("WetlandModel")
+
 source("../RUtilityFunctions/combinatorics.R")
 
 # Create All Combinations of Models from Params ---------------------------
