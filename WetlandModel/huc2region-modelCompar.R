@@ -9,9 +9,8 @@ source("../RUtilityFunctions/combinatorics.R")
 library(RPostgreSQL)
 library(postGIStools)
 
-#########################################
-# Database Connection + Loading/Merging
-#########################################
+
+# Database Connection and Loading -----------------------------------------
 source("../DecisionSuppTool/mysqlcfg.R")
 if(exists("user") || exists("pw")) {  
   con <- dbConnect(PostgreSQL(), dbname = "postgiz", user = user,
@@ -29,7 +28,7 @@ inlandbuff@data = merge(inlandbuff@data, wetloss, by = "ORIG_FID")
 dbDisconnect(con2)
 
 
-
+# Combine Spatial. Geo, and Wet Data --------------------------------------
 huc2AvgDis = readOGR("huc2AvgDis.shp", "huc2AvgDis")
 huc2AvgDis = spTransform(huc2AvgDis, proj4string(inlandbuff))
 
@@ -45,11 +44,12 @@ dat$WET = dat$WET*900/10000
 dat$logWET = log(dat$WET)
 
 write.table(dat[c("ORIG_FID",'WET','CS','WH','TR','RSLR','NDMI','DIS','logWET','region')],"mysqldata0517.csv", row.names=F, quote=F, sep=",", col.names=F)
-
 write.table(dat,"data0417.txt", row.names=F, quote=F, sep="\t")
 
 data=list(Nobs=nrow(dat), Nregion=2)
 
+
+# Create All Combinations of Models from Params ---------------------------
 createModel = function(fixed, random){
   fixed=na.omit(fixed)
   random=na.omit(random)
@@ -98,6 +98,8 @@ createModel = function(fixed, random){
 #   write(modelTxt,sprintf("Models\\%s.txt",i))
 # }
 
+
+# Run Each Model in JAGS --------------------------------------------------
 write.table("modelNo\tfixed\trandom\tDIC","Results\\DIC.txt", row.names=F, quote=F, sep="\t")
 for(i in 1:nrow(models)){
   model=jags.model(sprintf("Models\\%s.txt",i), data=append(data,dat), n.chains=3, n.adapt=2000)
