@@ -49,8 +49,9 @@ write.table(dat,"data0417.txt", row.names=F, quote=F, sep="\t")
 
 data=list(Nobs=nrow(dat), Nregion=2)
 
-
 # Create All Combinations of Models from Params ---------------------------
+params=c("RSLR","WH","TR","CS","NDMI")
+
 createModel = function(fixed, random){
   fixed=na.omit(fixed)
   random=na.omit(random)
@@ -89,16 +90,23 @@ createModel = function(fixed, random){
   return(modelString)
 }
 
-#Creates models; already done - commented out
-# params=c("RSLR","WH","TR","CS","NDMI")
-# models = getModels(params)
-# for(i in 1:nrow(models)){
-#   model = models[i,]
-#   modelTxt=createModel(fixed=model[1:(ncol(models)/2)],
-#               random=model[(ncol(models)/2+1):ncol(models)])
-#   write(modelTxt,sprintf("Models\\%s.txt",i))
-# }
+if (!dir.exists("Models/"))
+{
+  dir.create("Models")
+}
 
+modelDir = paste0("Models/", paste(params, collapse="."))
+if (!dir.exists(modelDir) || length(dir(modelDir)) != nrow(getModels(params)))
+{
+  dir.create(modelDir, showWarnings = FALSE)
+  models = getModels(params)
+  for(i in 1:nrow(models)){
+    model = models[i,]
+    modelTxt=createModel(fixed=model[1:(ncol(models)/2)],
+                random=model[(ncol(models)/2+1):ncol(models)])
+    write(modelTxt,sprintf("%s/%s.txt", modelDir, i))
+  }
+}
 
 # Run Each Model in JAGS --------------------------------------------------
 write.table("modelNo\tfixed\trandom\tDIC","Results\\DIC.txt", row.names=F, quote=F, sep="\t")
