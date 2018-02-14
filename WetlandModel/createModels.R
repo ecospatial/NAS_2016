@@ -52,10 +52,14 @@ createModels = function(params)
     dir.create(modelDir, showWarnings = FALSE)
     models = getModels(params)
     for(i in 1:nrow(models)){
-      model = models[i,]
-      modelTxt=createModel(fixed=model[1:(ncol(models)/2)],
-                           random=model[(ncol(models)/2+1):ncol(models)])
-      write(modelTxt,sprintf("%s/%s.txt", modelDir, i))
+      fileName = sprintf("%s/%s.txt", modelDir, i)
+      if (!file.exists(fileName))
+      {
+        model = models[i,]
+        modelTxt=createModel(fixed=model[1:(ncol(models)/2)],
+                             random=model[(ncol(models)/2+1):ncol(models)])
+        write(modelTxt, fileName)
+      }
     }
   }
 }
