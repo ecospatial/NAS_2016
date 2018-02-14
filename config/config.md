@@ -1,6 +1,6 @@
 # Configuration Readme
 
-Some scripts in this project require a connection to the ecospatial PostgreSQL server for data retrieval. Connection details must be detailed in 'mysqlcfg.R' in this directory with the following format:
+Some scripts in this project require a connection to the ecospatial PostgreSQL server for data retrieval. Connection details must be detailed in 'postgresqlcfg.R' in this directory with the following format:
 
 ```
 user = "username"
