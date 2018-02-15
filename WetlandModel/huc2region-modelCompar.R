@@ -41,9 +41,6 @@ dat[dat$HUC2 == "03" | dat$HUC2 == "12",]$region = 1
 dat$WET = dat$WET*900/10000
 dat$logWET = log(dat$WET)
 
-write.table(dat[c("ORIG_FID",'WET','CS','WH','TR','RSLR','NDMI','DIS','logWET','region')],"mysqldata0517.csv", row.names=F, quote=F, sep=",", col.names=F)
-write.table(dat,"data0417.txt", row.names=F, quote=F, sep="\t")
-
 data=list(Nobs=nrow(dat), Nregion=2)
 
 
