@@ -10,19 +10,19 @@ createModel = function(fixed, random){
   linearEq = ""
   
   if(length(fixed) > 0){
-    linearEq = sprintf("%s + %s",linearEq,paste(sprintf("b%s*%s[i]",fixed,fixed),sep="",collapse=" + "))
+    linearEq = sprintf("%s + %s", linearEq, paste(sprintf("b%s*%s[i]",fixed,fixed),sep="",collapse=" + "))
     fixedPriors = paste(sprintf("b%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n")
   }
   
   if(length(random) > 0){
-    linearEq = sprintf("%s + %s",linearEq,paste(sprintf("b%s[region[i]]*%s[i]",random,random),sep="",collapse=" + "))
+    linearEq = sprintf("%s + %s", linearEq, paste(sprintf("b%s[region[i]]*%s[i]",random,random),sep="",collapse=" + "))
     randomPriors = sprintf("for(j in 1:Nregion) {\n%s\n    }", paste("      b",random,"[j] ~ dnorm(0,0.00001)",sep="",collapse="\n"))
   }
   
   modelString = sprintf(
     "model {
     for (i in 1:Nobs) {
-    v.mu[i] <- b0 + %s #Linear Model
+    v.mu[i] <- b0 %s #Linear Model
     logWET[i] ~ dnorm(v.mu[i], v.tau)
     }
     
