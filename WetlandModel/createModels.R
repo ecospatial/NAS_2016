@@ -39,14 +39,15 @@ createModel = function(fixed, random){
   return(modelString)
 }
 
-createModels = function(params)
+createModels = function(params, folderName)
 {
   if (!dir.exists("Models/"))
   {
     dir.create("Models")
   }
   
-  modelDir = paste0("Models/", paste(params, collapse="."))
+  modelDir = paste0("Models/", folderName)
+  
   if (!dir.exists(modelDir) || length(dir(modelDir)) != nrow(getModels(params)))
   {
     dir.create(modelDir, showWarnings = FALSE)

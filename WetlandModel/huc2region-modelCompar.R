@@ -22,6 +22,7 @@ if(exists("user") || exists("pw")) {
 wetloss = get_postgis_query(con, 'SELECT * FROM wetloss')
 inlandbuff = get_postgis_query(con, "SELECT * FROM thkbuffers", geom_name = "geom")
 inlandbuff@data = merge(inlandbuff@data, wetloss, by = "ORIG_FID")
+#huc2 = get_postgis_query(con, "SELECT * FROM huc2", geom_name = "geom")
 
 dbDisconnect(con)
 
@@ -46,22 +47,48 @@ data=list(Nobs=nrow(dat), Nregion=2)
 
 # Create Models -----------------------------------------------------------
 source("createModels.R")
-params=c("RSLR","WH","TR","CS","NDMI")
-createModels(params)
+params = c("RSLR","WH","TR","CS","NDMI")
+response = "WET"
+folderName = paste0(params, collapse=".")
+createModels(params, folderName = folderName)
+
+# Normalize Data ----------------------------------------------------------
+dat_n = data.frame(sapply(dat[c(response, params)], function(x){scale(x)}))
 
 # Run Each Model in JAGS --------------------------------------------------
-write.table("modelNo\tfixed\trandom\tDIC","Results\\DIC.txt", row.names=F, quote=F, sep="\t")
-for(i in 1:nrow(models)){
-  model=jags.model(sprintf("Models\\%s.txt",i), data=append(data,dat), n.chains=3, n.adapt=2000)
+if (!dir.exists("Results"))
+{
+  dir.create("Results")
+}
+
+resultsDir = sprintf("Results/%s", folderName)
+if (!dir.exists(resultsDir))
+{
+  dir.create(resultsDir)
+}
+
+write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC.txt", resultsDir), row.names=F, quote=F, sep="\t")
+
+modelFiles = list.files(paste0("Models/", folderName), pattern="^\\d*.txt")
+
+for(modelFile in modelFiles)
+{
+  i = as.numeric(gsub("(\\d*)\\.txt", "\\1", modelFile))
+  model = jags.model(sprintf("Models/%s/%s.txt", folderName, i),
+                     data = append(data, dat),
+                     n.chains=3,
+                     n.adapt=2000)
   
-  output=coda.samples.dic(model=model,variable.names=c("b0", "bCS", "bWH", "bTR", "bRSLR", "bNDMI"), n.iter=20000, thin=1)
-  summary(output$samples)
-  output$dic
+  output = coda.samples.dic(model = model,
+                          variable.names=c("b0", "bCS", "bWH", "bTR", "bRSLR", "bNDMI"),
+                          n.iter=20000,
+                          thin=1)
   
   fixed = paste(na.omit(models[i,1:length(params)]),collapse=",")
   random = paste(na.omit(models[i,(length(params)+1):(length(params)*2)]),collapse=",")
   
-  write(sprintf("%s\t%s\t%s\t%s",i,fixed,random,output$dic$deviance+output$dic$penalty),
-        "Results\\DIC.txt",append=T)
-  save(output,file=sprintf("Results\\%s.RData",i))
+  write(sprintf("%s\t%s\t%s\t%s", i, fixed, random, output$dic$deviance + output$dic$penalty),
+        file = sprintf("%s/DIC.txt", resultsDir),
+        append = T)
+  save(output,file=sprintf("%s/%s.RData", resultsDir, i))
 }
