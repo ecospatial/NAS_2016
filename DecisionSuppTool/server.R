@@ -8,7 +8,7 @@ library(rgdal)
 library(RPostgreSQL)
 library(postGIStools)
 
-source("mysqlcfg.R")
+source("../config/postgresqlcfg.R")
 
 maxWET = 6 #Maximum wetland loss to report; set at 6 because it aids in visualization and excludes outliers.
 
@@ -16,8 +16,8 @@ maxWET = 6 #Maximum wetland loss to report; set at 6 because it aids in visualiz
 # Database Connection + Loading/Merging
 #########################################
 if(exists("user") || exists("pw")) {  
-  con <- dbConnect(PostgreSQL(), dbname = "postgiz", user = user,
-                    host = "52.14.87.100", port = 5432,
+  con <- dbConnect(PostgreSQL(), dbname = db, user = user,
+                    host = host, port = port,
                     password = pw)
   rm(pw);rm(user)
 }
