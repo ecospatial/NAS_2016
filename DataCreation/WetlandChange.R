@@ -7,7 +7,7 @@ outputName = "PaluEstuToWaterAquatic"
 
 fromRegex = "^.*(Palustrine|Estuarine) (?!Aquatic)"
 toRegex = "^.*(Water|Aquatic)"
-fromLaymen = "Land types in 1996 that are palustine or estuarine, except for palu/estu aquatic beds."
+fromLaymen = "Land types in 1996 that are palustine or estuarine, excluding palu/estu aquatic beds."
 toLaymen = "Land types in 2006 that are open water or palu/estu aquatic beds."
 
 test = F
@@ -23,12 +23,11 @@ extension = "_1996_2006_ccap_change.img"
 ccap = list(
   la = raster(paste0(ccapDir,"/la",extension)),
   fl = raster(paste0(ccapDir,"/fl",extension)),
-  ms = raster(paste0(ccapDir,"/ms",extesion)),
+  ms = raster(paste0(ccapDir,"/ms",extension)),
   tx = raster(paste0(ccapDir,"/tx",extension)),
   al = raster(paste0(ccapDir,"/al",extension))
 )
 wetlandCodes = read.delim(paste0(ccapDir, "/wetlandCodes.txt")) #all changes to and from wetlands
-
 
 
 # Test --------------------------------------------------------------------
@@ -123,14 +122,36 @@ for (state in names(ccap))
 
 write.table(changeVals9606, sprintf("%s/%s_output.txt", dir, outputName), row.names = FALSE, quote = FALSE)
 
-changeVals9606 = changeVals9606[order(changeVals9606$FID),]
-breaks = 3
-cols = colorRampPalette(c("green", "yellow", "red"))(breaks)
-colBreaks = cut(changeVals9606$wetLoss, c(-Inf, seq(0, max(changeVals9606$wetLoss), length.out = breaks)))
-plot(inlandbuff[inlandbuff$ORIG_FID %in% changeVals9606$FID,])
-plot(inlandbuff[inlandbuff$ORIG_FID %in% changeVals9606$FID,], add=T, col=cols[colBreaks], border=NA)
 
-# r = ccap$ms
-# inlandbuff = spTransform(inlandbuff, proj4string(ccap$ms))
-# cropLandPts = crop(inlandbuff, r)
-# val = extract(r, cropLandPts, fun=function(x, na.rm = na.rm){return(sum(x > 0, na.rm = na.rm))}, na.rm=TRUE)
+# Write Metadata ----------------------------------------------------------
+write(sprintf("  %s
+  -------------------------------
+  Time: %s
+  
+  Change Types:
+  -------------------------------
+  From:
+  \t%s
+  \t%s
+  \t\t%s
+  
+  To Regex:
+  \t%s
+  \t%s
+  \t\t%s
+  ",
+  outputName,
+  Sys.time(),
+  fromRegex,
+  fromLaymen,
+  paste(unique(changeCodes$Type96), collapse="\n\t\t"),
+  toRegex,
+  toLaymen,
+  paste(unique(changeCodes$Type06), collapse="\n\t\t")), sprintf("%s/%s_metadata.txt", dir, outputName))
+
+# changeVals9606 = changeVals9606[order(changeVals9606$FID),]
+# breaks = 3
+# cols = colorRampPalette(c("green", "yellow", "red"))(breaks)
+# colBreaks = cut(changeVals9606$wetLoss, c(-Inf, seq(0, max(changeVals9606$wetLoss), length.out = breaks)))
+# plot(inlandbuff[inlandbuff$ORIG_FID %in% changeVals9606$FID,])
+# plot(inlandbuff[inlandbuff$ORIG_FID %in% changeVals9606$FID,], add=T, col=cols[colBreaks], border=NA)
