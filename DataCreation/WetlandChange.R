@@ -65,7 +65,7 @@ if(dir.exists(dir) && length(list.files(dir)) != 0)
 {
   warning(paste0(outputName, " directory already exists and is not empty; files not written."))
 } else {
-  dir.create(dir)
+  dir.create(dir, showWarnings = FALSE)
   for (i in 1:length(change9606))
   {
     stateName = names(change9606)[i]
@@ -78,6 +78,7 @@ if(dir.exists(dir) && length(list.files(dir)) != 0)
 library(RPostgreSQL)
 library(postGIStools)
 
+# Load THK99 from db
 source("config/postgresqlcfg.R")
 if(exists("user") || exists("pw")) {  
   con <- dbConnect(PostgreSQL(), dbname = db, user = user,
@@ -85,11 +86,10 @@ if(exists("user") || exists("pw")) {
                    password = pw)
   rm(pw);rm(user)
 }
-
 inlandbuff = get_postgis_query(con, "SELECT * FROM thkbuffers", geom_name = "geom")
-
 dbDisconnect(con)
 
+# Load change if not loaded from above
 if(!exists("change9606"))
 {
   extension = sprintf("_%s.img", outputName)
@@ -102,10 +102,11 @@ if(!exists("change9606"))
   )
 }
 
-changeVals9606 = data.frame(FID = numeric(0), wetLoss = numeric(0))
 
+# Extract wetland change for each polygon in THK99 buffers
 inlandbuff = spTransform(inlandbuff, proj4string(ccap$al))
 
+changeVals9606 = data.frame(FID = numeric(0), wetLoss = numeric(0))
 source("RUtilityFunctions/getMinExtent.R")
 for (state in names(ccap))
 {
@@ -120,7 +121,13 @@ for (state in names(ccap))
   changeVals9606 = rbind(changeVals9606, cVals)
 }
 
-write.table(changeVals9606, sprintf("%s/%s_output.txt", dir, outputName), row.names = FALSE, quote = FALSE)
+# Remove duplicates from states that have overlapping extents
+# Largest value is true value, as it is contained fully by one state
+changeVals9606 = changeVals9606[order(changeVals9606$FID, -changeVals9606$wetLoss),] #order by FID then hi-to-lo wetLoss
+changeVals9606 = changeVals9606[!duplicated(changeVals9606$FID),] #remove duplicates after first value (which is highest)
+
+#Write
+write.table(changeVals9606, sprintf("%s/%s_output.txt", dir, outputName), row.names = FALSE, quote = FALSE, sep = "\t")
 
 
 # Write Metadata ----------------------------------------------------------
@@ -149,9 +156,3 @@ write(sprintf("  %s
   toLaymen,
   paste(unique(changeCodes$Type06), collapse="\n\t\t")), sprintf("%s/%s_metadata.txt", dir, outputName))
 
-# changeVals9606 = changeVals9606[order(changeVals9606$FID),]
-# breaks = 3
-# cols = colorRampPalette(c("green", "yellow", "red"))(breaks)
-# colBreaks = cut(changeVals9606$wetLoss, c(-Inf, seq(0, max(changeVals9606$wetLoss), length.out = breaks)))
-# plot(inlandbuff[inlandbuff$ORIG_FID %in% changeVals9606$FID,])
-# plot(inlandbuff[inlandbuff$ORIG_FID %in% changeVals9606$FID,], add=T, col=cols[colBreaks], border=NA)
