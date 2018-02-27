@@ -3,11 +3,11 @@ library(sp)
 library(raster)
 
 # Configuration -----------------------------------------------------------
-outputName = "PaluEstuToWaterAquatic"
+outputName = "EstuToWaterAquatic"
 
-fromRegex = "^.*(Palustrine|Estuarine) (?!Aquatic)"
+fromRegex = "^.*(Estuarine) (?!Aquatic)"
 toRegex = "^.*(Water|Aquatic)"
-fromLaymen = "Land types in 1996 that are palustine or estuarine, excluding palu/estu aquatic beds."
+fromLaymen = "Land types in 1996 that are estuarine, excluding estu aquatic beds."
 toLaymen = "Land types in 2006 that are open water or palu/estu aquatic beds."
 
 test = F
@@ -131,28 +131,34 @@ write.table(changeVals9606, sprintf("%s/%s_output.txt", dir, outputName), row.na
 
 
 # Write Metadata ----------------------------------------------------------
-write(sprintf("  %s
-  -------------------------------
-  Time: %s
+write(sprintf("%s
+-------------------------------
+Time: %s
+
+Change Types:
+-------------------------------
+From:
+\t%s
+\t%s
+\t\t%s
+
+To Regex:
+\t%s
+\t%s
+\t\t%s
+
+Codes:
+-------------------------------",
+    outputName,
+    Sys.time(),
+    fromRegex,
+    fromLaymen,
+    paste(unique(changeCodes$Type96), collapse="\n\t\t"),
+    toRegex,
+    toLaymen,
+    paste(unique(changeCodes$Type06), collapse="\n\t\t")),
   
-  Change Types:
-  -------------------------------
-  From:
-  \t%s
-  \t%s
-  \t\t%s
-  
-  To Regex:
-  \t%s
-  \t%s
-  \t\t%s
-  ",
-  outputName,
-  Sys.time(),
-  fromRegex,
-  fromLaymen,
-  paste(unique(changeCodes$Type96), collapse="\n\t\t"),
-  toRegex,
-  toLaymen,
-  paste(unique(changeCodes$Type06), collapse="\n\t\t")), sprintf("%s/%s_metadata.txt", dir, outputName))
+  sprintf("%s/%s_metadata.txt", dir, outputName))
+
+write.table(changeCodes, sprintf("%s/%s_metadata.txt", dir, outputName), quote =FALSE, row.names = FALSE, append = TRUE, sep = "\t")
 

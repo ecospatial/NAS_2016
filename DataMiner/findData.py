@@ -227,8 +227,6 @@ if beforeKatrina and KATRINA_YEAR in years and KATRINA_MONTH in months:
 # Download Scenes from ESPA
 #######################
 
-id1 = 'LE07_L1TP_027038_19990630_20161003_01_T1'#datasets["data"]["results"][0]["display_id"]
-
 print "Logging in to ESPA...",
 r = espa_api('user')
 if r is None:
@@ -252,11 +250,11 @@ for c in collections:
 	order[c] = resp[c]
 	order[c]["products"] = products
 
-print json.dumps(order, indent=4)
+# print json.dumps(order, indent=4)
 
 print "Ordering...",
 orderResponse = espa_api('order', verb='post', body=order)
-print json.dumps(orderResponse, indent=4)
+# print json.dumps(orderResponse, indent=4)
 if orderResponse["status"] is not None and orderResponse["status"] == "ordered" and orderResponse["orderid"] is not None:
 	print "Order complete!"
 	orderId = orderResponse["orderid"]
