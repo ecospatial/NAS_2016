@@ -1,3 +1,6 @@
+# Download 
+# Tyler T. Hardy 2018
+
 import requests
 import simplejson as json
 import getpass
@@ -8,14 +11,12 @@ import os
 #######################
 # Config
 #######################
-eeUrl = "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0/"
-espaUrl = 'https://espa.cr.usgs.gov/api/v1/'
-
 username = 'tylerthardy'
 
+#Define WRS rows and paths here; lengths must match, with each element corresponding with its complement (e.g. (WRSrows[0], WRSpaths[0]) corresponds with the WRS scene 39, 20)
 WRSrows = [39, 39, 40, 39, 40, 41, 42, 39, 40, 39, 40, 39, 40, 41, 42, 39, 40, 41, 39, 40, 42, 43, 39, 40]
 WRSpaths = [20, 18, 18, 25, 25, 16, 16, 23, 23, 21, 21, 19, 26, 26, 26, 17, 17, 17, 24, 24, 15, 15, 22, 22]
-datasetType = "LANDSAT_TM_C1"
+datasetType = "LANDSAT_TM_C1" # Dataset types found here: https://dds.cr.usgs.gov/ee-data/coveragemaps/kml/ee/
 months = [6, 7, 8]
 years = [2005]
 beforeKatrina = True #August 23rd, 2005 - August 31, 2005
@@ -44,6 +45,8 @@ downloadNote = "Download for NGOM Summer %s NDVI/NDMI imagery. Automatically gen
 #######################
 # Definitions
 #######################
+eeUrl = "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0/"
+espaUrl = 'https://espa.cr.usgs.gov/api/v1/'
 NORTHWEST = 0
 NORTHEAST = 1
 SOUTHEAST = 2
