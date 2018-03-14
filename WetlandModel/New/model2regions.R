@@ -108,7 +108,7 @@ for(modelFile in modelFiles)
                      n.adapt=2000)
   
   output = coda.samples.dic(model = model,
-                          variable.names=c("b0", "bCS", "bWH", "bTR", "bRSLR", "bNDMI"),
+                          variable.names=c("b0", paste0("b", params)),
                           n.iter=20000,
                           thin=1)
   
