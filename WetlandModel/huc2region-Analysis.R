@@ -20,8 +20,8 @@ postExamine = function(coda_output,...){
   mcmc_areas(coda_output$samples,...)
 }
 
-DICexamine = function(modelName){
-  dic = read.delim("X:/NAS Stuff/NAS_2016/WetlandModel/New/Results/RSLRsq.WH.TR.CS.NDVI/DIC.txt", skip = 1) #MODELNAME
+DICexamine = function(folderName){
+  dic = read.delim(sprintf("Results/%s/DIC.txt", folderName), skip = 1)
   dic = dic[order(dic$DIC),]
   print(head(dic))
 }
