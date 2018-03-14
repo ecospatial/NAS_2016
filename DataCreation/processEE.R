@@ -11,16 +11,29 @@ names(ndvi) = gsub("mean","ndvi",names(ndvi))
 ndmi = read.csv(paste0(dir, "T0/thk99NDMI.csv"))
 names(ndmi) = gsub("mean","ndmi",names(ndmi))
 
-data = merge(merge(merge(thk99,wetloss,by="system.index"),ndvi,by="system.index"),ndmi,by="system.index")
+wet96 = read.csv(paste0(dir, "T0/thk99wet96.csv"))
+names(wet96) = gsub("count","wet96",names(wet96))
+
+data = merge(merge(merge(merge(thk99,wetloss,by="system.index"),ndvi,by="system.index"),ndmi,by="system.index"),wet96,by="system.index")
 names(data)
-data = data[c("ORIG_FID.x", "SLOPE___","SL_MM_YR_", "TIDE_M_","WAVES_M_","WET","ndvi","ndmi")]
-names(data) = c("ORIG_FID", "CS", "RSLR", "TR", "WH", "WET", "NDVI","NDMI")
+data = data[c("ORIG_FID.x", "SLOPE___","SL_MM_YR_", "TIDE_M_","WAVES_M_","WET","ndvi","ndmi","wet96")]
+names(data) = c("ORIG_FID", "CS", "RSLR", "TR", "WH", "WET", "NDVI","NDMI","WET96")
 names(data)
 
 data$logWET = rep(NA, nrow(data))
 data$logWET[data$WET > 0] = log(data$WET[data$WET > 0])
 
+data$logWET96 = rep(NA, nrow(data))
+data$logWET96[data$WET96 > 0] = log(data$WET96[data$WET96 > 0])
+
+data$PCT = rep(NA, nrow(data))
+data$PCT[data$WET96 > 0] = data$WET[data$WET96 > 0]/data$WET96[data$WET96 > 0]
+
+data$logPCT = rep(NA, nrow(data))
+data$logPCT[!is.na(data$PCT) & data$PCT != 0] = log(data$PCT[!is.na(data$PCT) & data$PCT != 0])
+
 write.csv(data, paste0(dir, "T1/fullData.csv"))
+
 
 
 # Modify kml file for R
