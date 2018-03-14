@@ -63,5 +63,7 @@ createModels = function(params, folderName)
       }
     }
   }
+  
+  return(getModels(params))
 }
 
