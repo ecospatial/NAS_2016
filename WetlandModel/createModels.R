@@ -1,7 +1,7 @@
 source("../RUtilityFunctions/combinatorics.R")
 
 # Create All Combinations of Models from Params ---------------------------
-createModel = function(fixed, random){
+createModel = function(response, fixed, random){
   fixed=na.omit(fixed)
   random=na.omit(random)
   
@@ -10,7 +10,7 @@ createModel = function(fixed, random){
   linearEq = ""
   
   if(length(fixed) > 0){
-    linearEq = sprintf("%s + %s", linearEq, paste(sprintf("b%s*%s[i]",fixed,fixed),sep="",collapse=" + "))
+    linearEq = sprintf("%s + %s", linearEq, paste(sprintf("b%s * %s[i]",fixed,fixed),sep="",collapse=" + "))
     fixedPriors = paste(sprintf("b%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n")
   }
   
@@ -22,8 +22,8 @@ createModel = function(fixed, random){
   modelString = sprintf(
     "model {
     for (i in 1:Nobs) {
-    v.mu[i] <- b0 %s #Linear Model
-    logWET[i] ~ dnorm(v.mu[i], v.tau)
+    %s.mu[i] <- b0%s #Linear Model
+    %s[i] ~ dnorm(%s.mu[i], tau)
     }
     
     b0 ~ dnorm(0,0.00001)
@@ -32,14 +32,14 @@ createModel = function(fixed, random){
     
     %s #Random Effect Priors
     
-    v.tau ~ dgamma(1,1)
-    v.sigma <- 1/sqrt(v.tau)
-}", linearEq, fixedPriors, randomPriors)
+    tau ~ dgamma(1,1)
+    sigma <- 1/sqrt(tau)
+}", response, linearEq, response, response, fixedPriors, randomPriors)
   
   return(modelString)
 }
 
-createModels = function(params, folderName)
+createModels = function(response, params, folderName)
 {
   if (!dir.exists("Models/"))
   {
@@ -57,7 +57,8 @@ createModels = function(params, folderName)
       if (!file.exists(fileName))
       {
         model = models[i,]
-        modelTxt=createModel(fixed=model[1:(ncol(models)/2)],
+        modelTxt=createModel(response=response,
+                             fixed=model[1:(ncol(models)/2)],
                              random=model[(ncol(models)/2+1):ncol(models)])
         write(modelTxt, fileName)
       }

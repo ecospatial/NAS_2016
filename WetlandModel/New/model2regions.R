@@ -70,9 +70,12 @@ thk99buff = thk99buff[thk99buff$WET > 0,]
 setwd("..")
 source("createModels.R")
 setwd("./New")
+
 params = c("RSLR","WHsq","TR","CS","NDVI")
-folderName = paste0(params, collapse=".")
-models = createModels(params, folderName = folderName)
+response = "logWET"
+
+folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
+models = createModels(response, params, folderName = folderName)
 
 # Normalize Data ----------------------------------------------------------
 thk99buff_n = data.frame(sapply(thk99buff@data[c(params)], function(x){scale(x)}))
@@ -99,6 +102,8 @@ modelFiles = list.files(paste0("Models/", folderName), pattern="^\\d*.txt")
 
 data = append(list(Nobs=nrow(thk99buff_n), Nregion=2), thk99buff_n)
 
+
+Sys.time()
 for(modelFile in modelFiles)
 {
   i = as.numeric(gsub("(\\d*)\\.txt", "\\1", modelFile))
@@ -120,5 +125,4 @@ for(modelFile in modelFiles)
         append = T)
   save(output,file=sprintf("%s/%s.RData", resultsDir, i))
 }
-
 Sys.time()
