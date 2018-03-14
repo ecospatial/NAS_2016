@@ -23,8 +23,8 @@ dbDisconnect(con)
 
 
 # Load Local Data (TODO: Make DB) -----------------------------------------
-thk99buff = readOGR("C:/DATA/EarthEngine/T1/thk99buff.kml", "thk99buff")
-thk99data = read.csv("C:/DATA/EarthEngine/T1/fullData.csv")
+thk99buff = readOGR("X:/NAS Stuff/DATA/EarthEngine/T1/thk99buff.kml", "thk99buff")
+thk99data = read.csv("X:/NAS Stuff/DATA/EarthEngine/T1/fullData.csv")
 
 # Combine Spatial. Geo, and Wet Data --------------------------------------
 huc2 = spTransform(huc2, proj4string(thk99buff))
@@ -54,6 +54,9 @@ plot(thk99buff[thk99buff@data$ORIG_FID == 1845,], add=T, col="white", border="bl
 thk99buff$WET = thk99buff$WET*900/10000
 thk99buff$logWET = log(thk99buff$WET)
 
+# Calculate squared RSLR (for non-linear)
+thk99buff$RSLRsq = thk99buff$RSLR^2
+
 # Visualize removing wetland changes of 0
 plot(huc2)
 plot(thk99buff, add=T, col="green", border=NA)
@@ -67,8 +70,7 @@ thk99buff = thk99buff[thk99buff$WET > 0,]
 setwd("..")
 source("createModels.R")
 setwd("./New")
-params = c("RSLR","WH","TR","CS","NDVI")
-response = "WET"
+params = c("RSLRsq","WH","TR","CS","NDVI")
 folderName = paste0(params, collapse=".")
 models = createModels(params, folderName = folderName)
 
