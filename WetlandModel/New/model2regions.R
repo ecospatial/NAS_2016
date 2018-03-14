@@ -23,12 +23,12 @@ dbDisconnect(con)
 
 
 # Load Local Data (TODO: Make DB) -----------------------------------------
-thk99buff = readOGR("X:/NAS Stuff/DATA/EarthEngine/T1/thk99buff.kml", "thk99buff")
-thk99data = read.csv("X:/NAS Stuff/DATA/EarthEngine/T1/fullData.csv")
+thk99buff = readOGR("C:/DATA/EarthEngine/T1/thk99buff.kml", "thk99buff")
+thk99data = read.csv("C:/DATA/EarthEngine/T1/fullData.csv")
 
 # Combine Spatial. Geo, and Wet Data --------------------------------------
 huc2 = spTransform(huc2, proj4string(thk99buff))
-hucZone = over(thk99buff,huc2[,"huc2"]) #3=FL, 12=TX, 8=LA, 13=west TX
+hucZone = over(thk99buff,huc2[,"huc2"]) #3=FL, 12=TX, 13=west TX /// 8=LA
 thk99buff$HUC2 = hucZone$huc2
 thk99buff$region = sapply(thk99buff$HUC2, function(x){
   if (x == "03" | x == "12" | x == "13")

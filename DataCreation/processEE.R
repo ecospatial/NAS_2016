@@ -1,4 +1,4 @@
-dir = "X:/NAS Stuff/DATA/EarthEngine/"
+dir = "C:/DATA/EarthEngine/"
 
 thk99 = read.csv(paste0(dir, "T0/thk99.csv"))
 
