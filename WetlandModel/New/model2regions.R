@@ -54,8 +54,8 @@ plot(thk99buff[thk99buff@data$ORIG_FID == 1845,], add=T, col="white", border="bl
 thk99buff$WET = thk99buff$WET*900/10000
 thk99buff$logWET = log(thk99buff$WET)
 
-# Calculate squared RSLR (for non-linear)
-thk99buff$RSLRsq = thk99buff$RSLR^2
+# Calculate squared WH (for non-linear)
+thk99buff$WHsq = thk99buff$WH^2
 
 # Visualize removing wetland changes of 0
 plot(huc2)
@@ -70,7 +70,7 @@ thk99buff = thk99buff[thk99buff$WET > 0,]
 setwd("..")
 source("createModels.R")
 setwd("./New")
-params = c("RSLRsq","WH","TR","CS","NDVI")
+params = c("RSLR","WHsq","TR","CS","NDVI")
 folderName = paste0(params, collapse=".")
 models = createModels(params, folderName = folderName)
 
