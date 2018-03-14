@@ -1,14 +1,14 @@
-setwd("WetlandModel")
+setwd("WetlandModel/New")
 
 library(bayesplot)
 
-getCI = function(modelNo, ...){
-  load(file=sprintf("Results\\%s.RData", modelNo))
+getCI = function(modelNo, modelName, ...){
+  load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
   return(output)
 }
 
-getCIs = function(modelNo, ...){
-  load(file=sprintf("Results\\%s.RData", modelNo))
+getCIs = function(modelNo, modelName, ...){
+  load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
   print(summary(output$samples))
   mcmc_areas(output$samples,...) + ggplot2::xlab("Coefficient Value") + ggplot2::ylab("Covariate")
   #return(output)
@@ -18,6 +18,12 @@ postExamine = function(coda_output,...){
   print(summary(coda_output$samples))
   print(coda_output$dic)
   mcmc_areas(coda_output$samples,...)
+}
+
+DICexamine = function(modelName){
+  dic = read.delim("X:/NAS Stuff/NAS_2016/WetlandModel/New/Results/RSLRsq.WH.TR.CS.NDVI/DIC.txt", skip = 1) #MODELNAME
+  dic = dic[order(dic$DIC),]
+  print(head(dic))
 }
 
 #########################################
