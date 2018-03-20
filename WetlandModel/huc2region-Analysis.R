@@ -21,9 +21,36 @@ postExamine = function(coda_output,...){
 }
 
 DICexamine = function(folderName){
+  print(folderName)
   dic = read.delim(sprintf("Results/%s/DIC_%s.txt", folderName, folderName), skip = 1)
   dic = dic[order(dic$DIC),]
-  print(head(dic))
+  dic = dic[dic$DIC <= min(dic$DIC)+2,]
+  dic$sig = rep(NA, nrow(dic))
+  dic$non = rep(NA, nrow(dic))
+  
+  for (i in 1:nrow(dic))
+  {
+    row = dic[i,]
+    
+    load(file=sprintf("Results/%s/%s.RData", folderName, row$modelNo))
+    
+    qts = summary(output$samples)$quantiles[,c(1,5)]
+    sig = c()
+    non = c()
+    for (cov in row.names(qts))
+    {
+      signif = as.logical(qts[cov,][2]*qts[cov,][1] > 0)
+      if (signif)
+        sig = c(sig, cov)
+      else
+        non = c(non, cov)
+    }
+    
+    dic[dic$modelNo == row$modelNo,]$sig = paste0(sig, collapse=",")
+    dic[dic$modelNo == row$modelNo,]$non = paste0(non, collapse=",")
+  }
+  
+  print(dic)
 }
 
 #########################################
