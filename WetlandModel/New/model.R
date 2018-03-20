@@ -7,7 +7,7 @@ library(rgdal)
 library(RPostgreSQL)
 library(postGIStools)
 
-regions = 2 #2 or 3 hydrological regimes
+regions = 3 #2 or 3 hydrological regimes
 
 
 # Database Connection and Loading -----------------------------------------
@@ -91,6 +91,10 @@ params = c("RSLR","WH","TR","CS","NDMI")
 response = "logPCT"
 
 folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
+if (regions == 3)
+{
+  folderName = paste0(folderName, "-3Regions")
+}
 models = createModels(response, params, folderName = folderName)
 
 # Normalize Data ----------------------------------------------------------
