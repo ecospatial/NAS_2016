@@ -7,6 +7,8 @@ library(rgdal)
 library(RPostgreSQL)
 library(postGIStools)
 
+regions = 2 #2 or 3 hydrological regimes
+
 
 # Database Connection and Loading -----------------------------------------
 source("../../config/postgresqlcfg.R")
@@ -28,14 +30,28 @@ thk99data = read.csv("C:/DATA/EarthEngine/T1/fullData.csv")
 
 # Combine Spatial. Geo, and Wet Data --------------------------------------
 huc2 = spTransform(huc2, proj4string(thk99buff))
-hucZone = over(thk99buff,huc2[,"huc2"]) #3=FL, 12=TX, 13=west TX /// 8=LA
+hucZone = over(thk99buff,huc2[,"huc2"]) #03=FL, 12=TX, 13=west TX /// 08=LA
 thk99buff$HUC2 = hucZone$huc2
-thk99buff$region = sapply(thk99buff$HUC2, function(x){
-  if (x == "03" | x == "12" | x == "13")
-    return(1)
-  else
-    return(2)
-})
+if (regions == 2)
+{
+  thk99buff$region = sapply(thk99buff$HUC2, function(x){
+    if (x == "03" | x == "12" | x == "13")
+      return(1)
+    else
+      return(2)
+  })
+} else if (regions == 3) {
+  thk99buff$region = sapply(thk99buff$HUC2, function(x){
+    if (x == "12" | x == "13") # West Gulf
+      return(1)
+    else if (x == "08") # LA
+      return(2)
+    else
+      return(3) # East Gulf
+  })
+} else {
+  stop("ONLY 2 OR 3 REGIMES ALLOWED")
+}
 
 thk99buff@data = cbind(thk99buff@data, thk99data)
 
@@ -71,7 +87,7 @@ setwd("..")
 source("createModels.R")
 setwd("./New")
 
-params = c("RSLR","WHsq","TR","CS","NDVI")
+params = c("RSLR","WH","TR","CS","NDMI")
 response = "logPCT"
 
 folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
@@ -107,7 +123,7 @@ write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC_%s.txt", resultsDir, 
 
 modelFiles = list.files(paste0("Models/", folderName), pattern="^\\d*.txt")
 
-data = append(list(Nobs=nrow(thk99buff_n), Nregion=2), thk99buff_n)
+data = append(list(Nobs=nrow(thk99buff_n), Nregion=regions), thk99buff_n)
 
 
 Sys.time()
