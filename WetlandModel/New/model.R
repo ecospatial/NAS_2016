@@ -57,13 +57,16 @@ thk99buff@data = cbind(thk99buff@data, thk99data)
 
 # Visualize
 colF = function(x){
-  if (x =='03' | x == '13' | x == '12')
-    return("red")
+  if (x == 1)
+    return("blue")
+  else if (x == 2)
+    return ("green")
   else
-    return("green")
+    return("red")
 }
-plot(huc2)
-plot(thk99buff, add=T, col=sapply(hucZone$huc2, colF), border=NA)
+plot(thk99buff, col=NA, border=NA)
+plot(huc2, add=T)
+plot(thk99buff, add=T, col=sapply(thk99buff$region, colF), border=NA)
 plot(thk99buff[thk99buff@data$ORIG_FID == 1845,], add=T, col="white", border="black", lwd=3)
 
 # Convert wetland change pixels to hectares and compute log change
@@ -74,7 +77,8 @@ thk99buff$logWET = log(thk99buff$WET)
 thk99buff$WHsq = thk99buff$WH^2
 
 # Visualize removing wetland changes of 0
-plot(huc2)
+plot(thk99buff, col=NA, border=NA)
+plot(huc2, add=T)
 plot(thk99buff, add=T, col="green", border=NA)
 plot(thk99buff[thk99buff$WET > 0,], add=T, col="red", border=NA)
 
