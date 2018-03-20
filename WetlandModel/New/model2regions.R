@@ -72,7 +72,7 @@ source("createModels.R")
 setwd("./New")
 
 params = c("RSLR","WHsq","TR","CS","NDVI")
-response = "logWET"
+response = "logPCT"
 
 folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
 models = createModels(response, params, folderName = folderName)
@@ -81,6 +81,13 @@ models = createModels(response, params, folderName = folderName)
 thk99buff_n = data.frame(sapply(thk99buff@data[c(params)], function(x){scale(x)}))
 thk99buff_n = cbind(thk99buff_n, region=thk99buff$region)
 thk99buff_n = cbind(thk99buff_n, logWET=thk99buff$logWET)
+thk99buff_n = cbind(thk99buff_n, logPCT=thk99buff$logPCT)
+
+tryCatch({
+  thk99buff_n[response]
+}, error= function(e){
+  stop("RESPONSE NOT INCLUDED IN DATA, SEE 'Normalize Data' SECTION IN CODE")
+})
 
 # Run Each Model in JAGS --------------------------------------------------
 if (!dir.exists("Results"))
