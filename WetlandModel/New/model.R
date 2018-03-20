@@ -154,7 +154,7 @@ for(modelFile in modelFiles)
   random = paste(na.omit(models[i,(length(params)+1):(length(params)*2)]),collapse=",")
   
   write(sprintf("%s\t%s\t%s\t%s", i, fixed, random, output$dic$deviance + output$dic$penalty),
-        file = sprintf("%s/DIC.txt", resultsDir),
+        file = sprintf("%s/DIC_%s.txt", resultsDir, folderName),
         append = T)
   save(output,file=sprintf("%s/%s.RData", resultsDir, i))
 }
