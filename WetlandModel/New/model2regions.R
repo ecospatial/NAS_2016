@@ -96,7 +96,7 @@ if (!dir.exists(resultsDir))
 
 source("../../RUtilityFunctions/codaSamplesDIC.R")
 
-write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC.txt", resultsDir), row.names=F, quote=F, sep="\t")
+write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC_%s.txt", resultsDir, folderName), row.names=F, quote=F, sep="\t")
 
 modelFiles = list.files(paste0("Models/", folderName), pattern="^\\d*.txt")
 

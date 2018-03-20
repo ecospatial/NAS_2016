@@ -21,7 +21,7 @@ postExamine = function(coda_output,...){
 }
 
 DICexamine = function(folderName){
-  dic = read.delim(sprintf("Results/%s/DIC.txt", folderName), skip = 1)
+  dic = read.delim(sprintf("Results/%s/DIC_%s.txt", folderName, folderName), skip = 1)
   dic = dic[order(dic$DIC),]
   print(head(dic))
 }
