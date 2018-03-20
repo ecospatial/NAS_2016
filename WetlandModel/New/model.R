@@ -140,6 +140,13 @@ Sys.time()
 for(modelFile in modelFiles)
 {
   i = as.numeric(gsub("(\\d*)\\.txt", "\\1", modelFile))
+  
+  if (file.exists(sprintf("%s/%s.RData", resultsDir, i)))
+  {
+    print(sprintf("Skipping model %s; it already has been ran", i))
+    next()
+  }
+  
   model = jags.model(sprintf("Models/%s/%s.txt", folderName, i),
                      data = data,
                      n.chains=3,
