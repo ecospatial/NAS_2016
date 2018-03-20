@@ -7,7 +7,11 @@ library(rgdal)
 library(RPostgreSQL)
 library(postGIStools)
 
-regions = 3 #2 or 3 hydrological regimes
+
+# CONFIG ------------------------------------------------------------------
+regions = 2 #2 or 3 hydrological regimes
+params = c("RSLR","WH","TR","CS","NDVI")
+response = "logPCT"
 
 
 # Database Connection and Loading -----------------------------------------
@@ -85,22 +89,6 @@ plot(thk99buff[thk99buff$WET > 0,], add=T, col="red", border=NA)
 # Remove buffers without wetland change
 thk99buff = thk99buff[thk99buff$WET > 0,]
 
-
-# Create Models -----------------------------------------------------------
-setwd("..")
-source("createModels.R")
-setwd("./New")
-
-params = c("RSLR","WH","TR","CS","NDMI")
-response = "logPCT"
-
-folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
-if (regions == 3)
-{
-  folderName = paste0(folderName, "-3Regions")
-}
-models = createModels(response, params, folderName = folderName)
-
 # Normalize Data ----------------------------------------------------------
 thk99buff_n = data.frame(sapply(thk99buff@data[c(params)], function(x){scale(x)}))
 thk99buff_n = cbind(thk99buff_n, region=thk99buff$region)
@@ -108,10 +96,27 @@ thk99buff_n = cbind(thk99buff_n, logWET=thk99buff$logWET)
 thk99buff_n = cbind(thk99buff_n, logPCT=thk99buff$logPCT)
 
 tryCatch({
-  thk99buff_n[response]
+  is.null(thk99buff_n[response])
 }, error= function(e){
   stop("RESPONSE NOT INCLUDED IN DATA, SEE 'Normalize Data' SECTION IN CODE")
 })
+
+
+# Arrange Data for JAGS ---------------------------------------------------
+data = append(list(Nobs=nrow(thk99buff_n), Nregion=regions), thk99buff_n)
+
+
+# Create Models -----------------------------------------------------------
+setwd("..")
+source("createModels.R")
+setwd("./New")
+
+folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
+if (regions == 3)
+{
+  folderName = paste0(folderName, "-3Regions")
+}
+models = createModels(response, params, folderName = folderName)
 
 # Run Each Model in JAGS --------------------------------------------------
 if (!dir.exists("Results"))
@@ -130,9 +135,6 @@ source("../../RUtilityFunctions/codaSamplesDIC.R")
 write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC_%s.txt", resultsDir, folderName), row.names=F, quote=F, sep="\t")
 
 modelFiles = list.files(paste0("Models/", folderName), pattern="^\\d*.txt")
-
-data = append(list(Nobs=nrow(thk99buff_n), Nregion=regions), thk99buff_n)
-
 
 Sys.time()
 for(modelFile in modelFiles)
