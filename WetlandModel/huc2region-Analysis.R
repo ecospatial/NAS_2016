@@ -7,10 +7,10 @@ getCI = function(modelNo, modelName, ...){
   return(output)
 }
 
-getCIs = function(modelNo, modelName, ...){
+getCIs = function(modelNo, modelName, prob=0.95, ...){
   load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
   print(summary(output$samples))
-  mcmc_areas(output$samples,...) + ggplot2::xlab("Coefficient Value") + ggplot2::ylab("Covariate")
+  mcmc_areas(output$samples, prob = prob, ...) + ggplot2::xlab("Coefficient Value") + ggplot2::ylab("Covariate")
   #return(output)
 }
 
@@ -20,11 +20,22 @@ postExamine = function(coda_output,...){
   mcmc_areas(coda_output$samples,...)
 }
 
-DICexamine = function(folderName){
+DICexamine = function(folderName, omit=NA){
   print(folderName)
+  print(paste0("DIC minimum: ", min(dic$DIC)))
   dic = read.delim(sprintf("Results/%s/DIC_%s.txt", folderName, folderName), skip = 1)
   dic = dic[order(dic$DIC),]
+  
+  if (!is.na(omit))
+  {
+    for (o in omit)
+    {
+      dic = dic[!(grepl(o, dic$fixed) | grepl(o, dic$random)),]
+    }
+  }
+  
   dic = dic[dic$DIC <= min(dic$DIC)+2,]
+  
   dic$sig = rep(NA, nrow(dic))
   dic$non = rep(NA, nrow(dic))
   
