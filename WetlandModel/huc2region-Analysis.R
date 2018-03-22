@@ -21,10 +21,10 @@ postExamine = function(coda_output,...){
   mcmc_areas(coda_output$samples,...)
 }
 
-DICexamine = function(folderName, omit=NA){
+DICexamine = function(folderName, omit=NA, all=F){
+  dic = read.delim(sprintf("Results/%s/DIC_%s.txt", folderName, folderName), skip = 1)
   print(folderName)
   print(paste0("DIC minimum: ", min(dic$DIC)))
-  dic = read.delim(sprintf("Results/%s/DIC_%s.txt", folderName, folderName), skip = 1)
   dic = dic[order(dic$DIC),]
   
   if (!is.na(omit))
@@ -35,7 +35,8 @@ DICexamine = function(folderName, omit=NA){
     }
   }
   
-  dic = dic[dic$DIC <= min(dic$DIC)+2,]
+  if(!all)
+    dic = dic[dic$DIC <= min(dic$DIC)+2,]
   
   dic$sig = rep(NA, nrow(dic))
   dic$non = rep(NA, nrow(dic))
