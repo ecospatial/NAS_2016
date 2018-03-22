@@ -1,6 +1,7 @@
 setwd("WetlandModel/New")
 
 library(bayesplot)
+library(coda)
 
 getCI = function(modelNo, modelName, ...){
   load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
