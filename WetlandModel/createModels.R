@@ -2,38 +2,43 @@ source("../RUtilityFunctions/combinatorics.R")
 
 # Create All Combinations of Models from Params ---------------------------
 createModel = function(response, fixed, random, randomIntercept = F){
+  additiveTerms = c()
+  fixedPriors = c()
+  randomPriors = c()
+  fixedPriorsDef = ""
+  randomPriorsDef = ""
+  
   fixed=na.omit(fixed)
   random=na.omit(random)
   
-  fixedPriors = ""
-  randomPriors = ""
-  linearEq = ""
-  
-  if(length(fixed) > 0){
-    linearEq = sprintf("%s + %s", linearEq, paste(sprintf("b%s * %s[i]",fixed,fixed),sep="",collapse=" + "))
-    fixedPriors = paste(sprintf("b%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n")
+  if (randomIntercept) {
+    additiveTerms = c(additiveTerms, "b0[region[i]]")
+    randomPriors = c(randomPriors, "b0[j] ~ dnorm(0,0.00001)")
+  } else {
+    additiveTerms = c(additiveTerms, "b0")
+    fixedPriors = c(fixedPriors, "b0 ~ dnorm(0,0.00001)")
   }
   
   if(length(random) > 0){
-    linearEq = sprintf("%s + %s", linearEq, paste(sprintf("b%s[region[i]]*%s[i]",random,random),sep="",collapse=" + "))
-    randomPriors = sprintf("for(j in 1:Nregion) {\n%s\n    }", paste("      b",random,"[j] ~ dnorm(0,0.00001)",sep="",collapse="\n"))
+    additiveTerms = c(additiveTerms, sprintf("b%s[region[i]] * %s[i]", random, random))
+    randomPriors = c(randomPriors, sprintf("%s[j] ~ dnorm(0,0.00001)", random, random))
+    randomPriorsDef = sprintf("for(j in 1:Nregion) {\n        %s\n    }", paste0(randomPriors, collapse = "\n        "))
   }
   
-  interceptRandom = ""
-  interceptPrior = "b0 ~ dnorm(0,0.00001)"
-  if (randomIntercept){
-    interceptRandom = "[region[i]]"
-    interceptPrior = "for(j in 1:Nregion) {\nb0[j] ~ dnorm(0,0.00001)\n    }"
+  if (length(fixed) > 0) {
+    additiveTerms = c(additiveTerms, sprintf("b%s * %s[i]", fixed, fixed))
+    fixedPriors = paste(sprintf("%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n")
+    fixedPriorsDef = paste0(fixedPriors, collapse = "\n    ")
   }
+  
+  linearEq = paste0(additiveTerms, collapse = " + ")
   
   modelString = sprintf(
     "model {
     for (i in 1:Nobs) {
-    %s.mu[i] <- b0%s%s #Linear Model
-    %s[i] ~ dnorm(%s.mu[i], tau)
+        %s.mu[i] <- %s #Linear Model
+        %s[i] ~ dnorm(%s.mu[i], tau) #Response distribution
     }
-    
-    %s #Intercept
     
     %s #Fixed Effect Priors
     
@@ -41,7 +46,7 @@ createModel = function(response, fixed, random, randomIntercept = F){
     
     tau ~ dgamma(1,1)
     sigma <- 1/sqrt(tau)
-}", response, interceptRandom, linearEq, response, response, interceptPrior, fixedPriors, randomPriors)
+}", response, linearEq, response, response, fixedPriorsDef, randomPriorsDef)
   
   return(modelString)
 }
