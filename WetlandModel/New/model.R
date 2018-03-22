@@ -9,9 +9,10 @@ library(postGIStools)
 
 
 # CONFIG ------------------------------------------------------------------
-regions = 2 #2 or 3 hydrological regimes
+regions = 3 #2 or 3 hydrological regimes
 params = c("RSLR","WH","TR","CS","NDVI")
 response = "logPCT"
+randomIntercept = T
 
 
 # Database Connection and Loading -----------------------------------------
@@ -116,7 +117,11 @@ if (regions == 3)
 {
   folderName = paste0(folderName, "-3Regions")
 }
-models = createModels(response, params, folderName = folderName)
+if (randomIntercept)
+{
+  folderName = paste0(folderName, "-rB0")
+}
+models = createModels(response, params, randomIntercept, folderName)
 
 # Run Each Model in JAGS --------------------------------------------------
 if (!dir.exists("Results"))

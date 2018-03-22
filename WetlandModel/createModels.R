@@ -1,7 +1,7 @@
 source("../RUtilityFunctions/combinatorics.R")
 
 # Create All Combinations of Models from Params ---------------------------
-createModel = function(response, fixed, random){
+createModel = function(response, fixed, random, randomIntercept = F){
   fixed=na.omit(fixed)
   random=na.omit(random)
   
@@ -19,14 +19,21 @@ createModel = function(response, fixed, random){
     randomPriors = sprintf("for(j in 1:Nregion) {\n%s\n    }", paste("      b",random,"[j] ~ dnorm(0,0.00001)",sep="",collapse="\n"))
   }
   
+  interceptRandom = ""
+  interceptPrior = "b0 ~ dnorm(0,0.00001)"
+  if (randomIntercept){
+    interceptRandom = "[region[i]]"
+    interceptPrior = "for(j in 1:Nregion) {\nb0[j] ~ dnorm(0,0.00001)\n    }"
+  }
+  
   modelString = sprintf(
     "model {
     for (i in 1:Nobs) {
-    %s.mu[i] <- b0%s #Linear Model
+    %s.mu[i] <- b0%s%s #Linear Model
     %s[i] ~ dnorm(%s.mu[i], tau)
     }
     
-    b0 ~ dnorm(0,0.00001)
+    %s #Intercept
     
     %s #Fixed Effect Priors
     
@@ -34,12 +41,12 @@ createModel = function(response, fixed, random){
     
     tau ~ dgamma(1,1)
     sigma <- 1/sqrt(tau)
-}", response, linearEq, response, response, fixedPriors, randomPriors)
+}", response, interceptRandom, linearEq, response, response, interceptPrior, fixedPriors, randomPriors)
   
   return(modelString)
 }
 
-createModels = function(response, params, folderName)
+createModels = function(response, params, randomIntercept, folderName)
 {
   if (!dir.exists("Models/"))
   {
@@ -59,7 +66,8 @@ createModels = function(response, params, folderName)
         model = models[i,]
         modelTxt=createModel(response=response,
                              fixed=model[1:(ncol(models)/2)],
-                             random=model[(ncol(models)/2+1):ncol(models)])
+                             random=model[(ncol(models)/2+1):ncol(models)],
+                             randomIntercept = randomIntercept)
         write(modelTxt, fileName)
       }
     }
