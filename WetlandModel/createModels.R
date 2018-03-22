@@ -19,17 +19,13 @@ createModel = function(response, fixed, random, randomIntercept = F){
     fixedPriors = c(fixedPriors, "b0 ~ dnorm(0,0.00001)")
   }
   
-  if(length(random) > 0){
-    additiveTerms = c(additiveTerms, sprintf("b%s[region[i]] * %s[i]", random, random))
-    randomPriors = c(randomPriors, sprintf("%s[j] ~ dnorm(0,0.00001)", random, random))
-    randomPriorsDef = sprintf("for(j in 1:Nregion) {\n        %s\n    }", paste0(randomPriors, collapse = "\n        "))
-  }
-  
-  if (length(fixed) > 0) {
-    additiveTerms = c(additiveTerms, sprintf("b%s * %s[i]", fixed, fixed))
-    fixedPriors = paste(sprintf("%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n")
-    fixedPriorsDef = paste0(fixedPriors, collapse = "\n    ")
-  }
+  additiveTerms = c(additiveTerms, sprintf("b%s[region[i]] * %s[i]", random, random))
+  randomPriors = c(randomPriors, sprintf("%s[j] ~ dnorm(0,0.00001)", random, random))
+  randomPriorsDef = sprintf("for(j in 1:Nregion) {\n        %s\n    }", paste0(randomPriors, collapse = "\n        "))
+
+  additiveTerms = c(additiveTerms, sprintf("b%s * %s[i]", fixed, fixed))
+  fixedPriors = paste(sprintf("%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n")
+  fixedPriorsDef = paste0(fixedPriors, collapse = "\n    ")
   
   linearEq = paste0(additiveTerms, collapse = " + ")
   
