@@ -3,11 +3,15 @@ setwd("WetlandModel/New")
 library(rjags)
 source("../../RUtilityFunctions/codaSamplesDIC.R")
 
-models = list.files("Interactions/Models/")
+folderName = "All.Interactions.SlopeInter"
+resultsDir = sprintf("Interactions/Results/%s", folderName)
+models = list.files(sprintf("Interactions/Models/%s", folderName))
 
-paramsFixed = c("bCS","bTR","bNDVI","bWH","bRSLR")
+paramsFixed = c("bCS","bTR","bNDVI","bWH","bRSLR","b0")
 
 # !!!!! Must load data from WetlandModel/New/model.R !!!!!
+
+write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC_%s.txt", resultsDir, folderName), row.names=F, quote=F, sep="\t")
 
 for (m in models)
 {
@@ -16,13 +20,13 @@ for (m in models)
   combs = combs[-length(combs)]
   params = paste0("bRSLRx",combs)
   
-  file = sprintf("Interactions/Results/All.Interactions/%s.RData", paste0(combs,collapse=","))
+  file = sprintf("%s/%s.RData", resultsDir, paste0(combs,collapse=","))
   if (file.exists(file)) {
     print(sprintf("Skipping %s, already exists", file))
     next()
   }
   
-  model = jags.model(sprintf("Interactions/Models/%s", m),
+  model = jags.model(sprintf("Interactions/Models/%s/%s", folderName, m),
                      data = data,
                      n.chains=3,
                      n.adapt=2000)
@@ -32,7 +36,7 @@ for (m in models)
                             n.iter=20000,
                             thin=1)
   write(sprintf("%s\t%s", paste0(combs,collapse=","), output$dic$deviance + output$dic$penalty),
-        file = "Interactions/Results/All.Interactions/DIC_All.Interactions.txt",
+        file = sprintf("%s/DIC_%s.txt", resultsDir, folderName),
         append = T)
   save(output,file=file)
 }
@@ -48,10 +52,6 @@ output = coda.samples.dic(model = model,
                           n.iter=20000,
                           thin=1)
 write(sprintf("%s\t%s", "211", output$dic$deviance + output$dic$penalty),
-      file = "Interactions/Results/DIC.txt",
+      file = sprintf("%s/DIC_%s.txt", resultsDir, folderName),
       append = T)
-save(output,file="Interactions/Results/211.RData")
-
-dic = read.delim("Interactions/Results/DIC.txt", sep="\t", header=F)
-names(dic) = c("Model", "DIC")
-dic[order(dic$DIC),]
+save(output,file=sprintf("%s/211.RData", resultsDir))
