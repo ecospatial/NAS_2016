@@ -5,6 +5,7 @@ library(sp)
 library(magrittr)
 library(rgdal)
 source("../RUtilityFunctions/codaSamplesDIC.R")
+source("../RUtilityFunctions/createModels.R")
 
 library(RPostgreSQL)
 library(postGIStools)
@@ -46,7 +47,6 @@ data=list(Nobs=nrow(dat), Nregion=2)
 
 
 # Create Models -----------------------------------------------------------
-source("createModels.R")
 params = c("RSLR","WH","TR","CS","NDMI")
 response = "WET"
 folderName = paste0(params, collapse=".")

@@ -1,4 +1,4 @@
-source("../RUtilityFunctions/combinatorics.R")
+source("combinatorics.R")
 
 # Create All Combinations of Models from Params ---------------------------
 createModel = function(response, fixed, random, randomIntercept = F){

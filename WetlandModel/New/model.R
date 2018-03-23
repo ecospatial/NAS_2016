@@ -6,13 +6,15 @@ library(magrittr)
 library(rgdal)
 library(RPostgreSQL)
 library(postGIStools)
+source("../../RUtilityFunctions/createModels.R")
+source("../../RUtilityFunctions/codaSamplesDIC.R")
 
 
 # CONFIG ------------------------------------------------------------------
 regions = 3 #2 or 3 hydrological regimes
 params = c("RSLR","WH","TR","CS","NDVI")
 response = "logPCT"
-randomIntercept = T
+randomIntercept = TRUE
 
 
 # Database Connection and Loading -----------------------------------------
@@ -72,7 +74,7 @@ colF = function(x){
 plot(thk99buff, col=NA, border=NA)
 plot(huc2, add=T)
 plot(thk99buff, add=T, col=sapply(thk99buff$region, colF), border=NA)
-plot(thk99buff[thk99buff@data$ORIG_FID == 1845,], add=T, col="white", border="black", lwd=3)
+#plot(thk99buff[thk99buff@data$ORIG_FID == 1845,], add=T, col="white", border="black", lwd=3)
 
 # Convert wetland change pixels to hectares and compute log change
 thk99buff$WET = thk99buff$WET*900/10000
@@ -108,10 +110,6 @@ data = append(list(Nobs=nrow(thk99buff_n), Nregion=regions), thk99buff_n)
 
 
 # Create Models -----------------------------------------------------------
-setwd("..")
-source("createModels.R")
-setwd("./New")
-
 folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
 if (regions == 3)
 {
@@ -134,8 +132,6 @@ if (!dir.exists(resultsDir))
 {
   dir.create(resultsDir)
 } 
-
-source("../../RUtilityFunctions/codaSamplesDIC.R")
 
 write.table("modelNo\tfixed\trandom\tDIC", sprintf("%s/DIC_%s.txt", resultsDir, folderName), row.names=F, quote=F, sep="\t")
 
