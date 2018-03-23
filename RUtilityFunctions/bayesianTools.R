@@ -1,11 +1,6 @@
 library(bayesplot)
 library(coda)
 
-getCI = function(modelNo, modelName, ...){
-  load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
-  return(output)
-}
-
 getCIs = function(modelNo, modelName, prob=0.95, ...){
   load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
   print(summary(output$samples))
@@ -13,15 +8,9 @@ getCIs = function(modelNo, modelName, prob=0.95, ...){
   #return(output)
 }
 
-postExamine = function(coda_output,...){
-  print(summary(coda_output$samples))
-  print(coda_output$dic)
-  mcmc_areas(coda_output$samples,...)
-}
-
-DICexamine = function(folderName, omit=NA, all=F){
-  dic = read.delim(sprintf("Results/%s/DIC_%s.txt", folderName, folderName), skip = 1)
-  print(folderName)
+DICexamine = function(modelName, omit=NA, all=F, top=NULL){
+  dic = read.delim(sprintf("Results/%s/DIC_%s.txt", modelName, modelName), skip = 1)
+  print(modelName)
   print(paste0("DIC minimum: ", min(dic$DIC)))
   dic = dic[order(dic$DIC),]
   
@@ -33,10 +22,10 @@ DICexamine = function(folderName, omit=NA, all=F){
     }
   }
   
-  if(!all)
+  if(!all & is.null(top))
     dic = dic[dic$DIC <= min(dic$DIC)+2,]
-  else
-    dic = head(dic,10)
+  else if(!is.null(top))
+    dic = head(dic, top)
   
   dic$sig = rep(NA, nrow(dic))
   dic$non = rep(NA, nrow(dic))
@@ -45,7 +34,7 @@ DICexamine = function(folderName, omit=NA, all=F){
   {
     row = dic[i,]
     
-    load(file=sprintf("Results/%s/%s.RData", folderName, row$modelNo))
+    load(file=sprintf("Results/%s/%s.RData", modelName, row$modelNo))
     
     qts = summary(output$samples)$quantiles[,c(1,5)]
     sig = c()
@@ -54,9 +43,17 @@ DICexamine = function(folderName, omit=NA, all=F){
     {
       signif = as.logical(qts[cov,][2]*qts[cov,][1] > 0)
       if (signif)
+      {
+        if (qts[cov,][2] > 0)
+          cov = paste0(cov, "+")
+        else
+          cov = paste0(cov, "-")
         sig = c(sig, cov)
+      }
       else
+      {
         non = c(non, cov)
+      }
     }
     
     dic[dic$modelNo == row$modelNo,]$sig = paste0(sig, collapse=",")
@@ -64,6 +61,7 @@ DICexamine = function(folderName, omit=NA, all=F){
   }
   
   print(dic)
+  return(dic)
 }
 
 # panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
