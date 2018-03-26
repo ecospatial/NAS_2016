@@ -15,6 +15,7 @@ regions = 3 #2 or 3 hydrological regimes
 params = c("RSLR","WH","TR","CS","NDVI")
 response = "logPCT"
 randomIntercept = TRUE
+properRandomEffects = TRUE
 
 
 # Database Connection and Loading -----------------------------------------
@@ -110,7 +111,7 @@ data = append(list(Nobs=nrow(thk99buff_n), Nregion=regions), thk99buff_n)
 
 
 # Create Models -----------------------------------------------------------
-folderName = sprintf("TRE)%s~%s", response, paste0(params, collapse="."))
+folderName = sprintf("%s~%s", response, paste0(params, collapse="."))
 if (regions == 3)
 {
   folderName = paste0(folderName, "-3Regions")
@@ -119,7 +120,11 @@ if (randomIntercept)
 {
   folderName = paste0(folderName, "-rB0")
 }
-models = createModels(response, params, randomIntercept, folderName)
+if (properRandomEffects)
+{
+  folderName = paste0("TRE)", folderName)
+}
+models = createModels(response, params, randomIntercept, folderName, properRandomEffects = properRandomEffects)
 
 # Run Each Model in JAGS --------------------------------------------------
 if (!dir.exists("Results"))

@@ -1,32 +1,52 @@
 # Create All Combinations of Models from Params ---------------------------
-createModel = function(response, fixed, random, randomIntercept = F){
+createModel = function(response, fixed, random, randomIntercept = F, properRandomEffects = F){
   additiveTerms = c()
   fixedPriors = c()
   randomPriors = c()
+  hyperPriors = c()
   fixedPriorsDef = ""
   randomPriorsDef = ""
+  hyperPriorsDef = ""
   
   fixed=na.omit(fixed)
   random=na.omit(random)
   
   if (randomIntercept) {
     additiveTerms = c(additiveTerms, "b0[region[i]]")
-    randomPriors = c(randomPriors, "b0[j] ~ dnorm(0,0.00001)")
+    if (properRandomEffects)
+    {
+      randomPriors = c(randomPriors, "b0[j] ~ dnorm(b0.mu,b0.tau)")
+      hyperPriors = c(hyperPriors, "b0.mu ~ dnorm(0,0.00001)")
+      hyperPriors = c(hyperPriors, "b0.tau ~ dgamma(1,1)")
+    } else {
+      randomPriors = c(randomPriors, "b0[j] ~ dnorm(0,0.00001)")
+    }
   } else {
     additiveTerms = c(additiveTerms, "b0")
     fixedPriors = c(fixedPriors, "b0 ~ dnorm(0,0.00001)")
   }
   
   additiveTerms = c(additiveTerms, sprintf("b%s[region[i]] * %s[i]", random, random))
-  randomPriors = c(randomPriors, sprintf("b%s[j] ~ dnorm(0,0.00001)", random, random))
+  if (properRandomEffects)
+  {
+    randomPriors = c(randomPriors, sprintf("b%s[j] ~ dnorm(%s.mu,%s.tau)", random, random, random, random))
+  } else {
+    randomPriors = c(randomPriors, sprintf("b%s[j] ~ dnorm(0,0.00001)", random))
+  }
   if (length(randomPriors) > 0)
   {
     randomPriorsDef = sprintf("for(j in 1:Nregion) {\n        %s\n    }", paste0(randomPriors, collapse = "\n        "))
   }
+  
+  hyperPriors = c(hyperPriors, sprintf("%s.mu ~ dnorm(0,0.00001)\n    %s.tau ~ dgamma(1,1)", random, random))
+  if (properRandomEffects)
+  {
+    hyperPriorsDef = paste0(hyperPriors, collapse="\n    ")
+  }
 
   additiveTerms = c(additiveTerms, sprintf("b%s * %s[i]", fixed, fixed))
-  fixedPriors = c(fixedPriors, paste(sprintf("    b%s ~ dnorm(0,0.00001)",fixed),sep="",collapse="\n"))
-  fixedPriorsDef = paste0(fixedPriors, collapse = "\n")
+  fixedPriors = c(fixedPriors, sprintf("b%s ~ dnorm(0,0.00001)",fixed))
+  fixedPriorsDef = paste0(fixedPriors, collapse = "\n    ")
   
   linearEq = paste0(additiveTerms, collapse = " + ")
   
@@ -34,21 +54,25 @@ createModel = function(response, fixed, random, randomIntercept = F){
     "model {
     for (i in 1:Nobs) {
         %s.mu[i] <- %s #Linear Model
-        %s[i] ~ dnorm(%s.mu[i], tau) #Response distribution
+        %s[i] ~ dnorm(%s.mu[i], %s.tau) #Response distribution
     }
+
+    #Random Effect Priors
+    %s
+
+    #Hyper Priors
+    %s 
     
-    %s #Fixed Effect Priors
+    #Fixed Effect Priors
+    %s
     
-    %s #Random Effect Priors
-    
-    tau ~ dgamma(1,1)
-    sigma <- 1/sqrt(tau)
-}", response, linearEq, response, response, fixedPriorsDef, randomPriorsDef)
+    %s.tau ~ dgamma(1,1)
+}", response, linearEq, response, response, response, randomPriorsDef, hyperPriorsDef, fixedPriorsDef, response)
   
   return(modelString)
 }
 
-createModels = function(response, params, randomIntercept, folderName)
+createModels = function(response, params, randomIntercept, folderName, properRandomEffects = F)
 {
   if (!dir.exists("Models/"))
   {
@@ -69,7 +93,8 @@ createModels = function(response, params, randomIntercept, folderName)
         modelTxt=createModel(response=response,
                              fixed=model[1:(ncol(models)/2)],
                              random=model[(ncol(models)/2+1):ncol(models)],
-                             randomIntercept = randomIntercept)
+                             randomIntercept = randomIntercept,
+                             properRandomEffects = properRandomEffects)
         write(modelTxt, fileName)
       }
     }
@@ -78,12 +103,7 @@ createModels = function(response, params, randomIntercept, folderName)
   return(getModels(params))
 }
 
-
 # Combinatorics -----------------------------------------------------------
-p=function(...,sep="",collapse=""){
-  paste(...,sep=sep,collapse=collapse)
-}
-
 number2binary = function(number, noBits) {
   binary_vector = rev(as.numeric(intToBits(number)))
   if(missing(noBits)) {
