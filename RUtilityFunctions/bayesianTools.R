@@ -162,6 +162,12 @@ DICexamine = function(modelName, omit=NA, all=F, top=NULL, noSig = F){
   else if(!is.null(top))
     dic = head(dic, top)
   
+  if (noSig)
+  {
+    print(dic)
+    return(dic)
+  }
+  
   dic$sig = rep(NA, nrow(dic))
   dic$non = rep(NA, nrow(dic))
   
