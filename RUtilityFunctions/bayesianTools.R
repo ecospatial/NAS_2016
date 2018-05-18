@@ -205,6 +205,54 @@ DICexamine = function(modelName, omit=NA, all=F, top=NULL, noSig = F){
   return(dic)
 }
 
+combineDIC = function(baseFolderName, top = 10, omit=NA)
+{
+  interceptFolderName = paste0(baseFolderName, "-rB0")
+  if (!dir.exists(paste0("Results/",baseFolderName)))
+  {
+    stop("MISSING BASE RESULTS FOLDER")
+  }
+  if (!dir.exists(paste0("Results/",interceptFolderName)))
+  {
+    stop("MISSING INTERCEPT RESULTS FOLDER")
+  }
+  
+  # Combine DICs to determine how many from each are needed to match the total output of 10 (argument 'top')
+  dic1 = read.delim(sprintf("Results/%s/DIC_%s.txt", baseFolderName, baseFolderName), skip = 1)
+  dic1$type = rep("base", nrow(dic1))
+  dic2 = read.delim(sprintf("Results/%s/DIC_%s.txt", interceptFolderName, interceptFolderName), skip = 1)
+  dic2$type = rep("intercept", nrow(dic2))
+  if (!is.na(omit))
+  {
+    for (o in omit)
+    {
+      dic1 = dic1[!(grepl(o, dic1$fixed) | grepl(o, dic1$random)),]
+      dic2 = dic2[!(grepl(o, dic2$fixed) | grepl(o, dic2$random)),]
+    }
+  }
+  
+  dicCombine = rbind(dic1,dic2)
+  dicCombine = dicCombine[order(dicCombine$DIC),]
+  dicCombine = head(dicCombine, top)
+  
+  topD1 = length(dicCombine[dicCombine$type == "base",])
+  topD2 = length(dicCombine[dicCombine$type == "intercept",])
+  
+  # Grab significance information for each set
+  d1 = signifExamine(baseFolderName, top = topD1, omit=omit)
+  d1$type = rep("", nrow(d1))
+  d2 = signifExamine(interceptFolderName, top = topD2, omit=omit)
+  d2$type = rep("rB0", nrow(d1))
+  
+  dCombine = rbind(d1, d2)
+  for (i in 1:nrow(dCombine)){
+    if (dCombine[i,]$type != "rB0"){
+      dCombine[i,]$modelNo = dCombine[i,]$modelNo + 242
+    }
+  }
+  dCombine = dCombine[order(dCombine$DIC),]
+}
+
 # panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
 # {
 #   usr <- par("usr"); on.exit(par(usr))
