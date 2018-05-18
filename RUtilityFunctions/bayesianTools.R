@@ -1,12 +1,6 @@
-library(bayesplot)
 library(coda)
-
-getCIs = function(modelNo, modelName, prob=0.95, ...){
-  load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
-  print(summary(output$samples))
-  mcmc_areas(output$samples, prob = prob, ...) + ggplot2::xlab("Coefficient Value") + ggplot2::ylab("Covariate")
-  #return(output)
-}
+library(magrittr)
+library(MCMCvis)
 
 getCI = function(modelNo, modelName = NULL){
   if (is.null(modelName))
