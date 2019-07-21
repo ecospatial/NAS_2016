@@ -194,9 +194,9 @@ HUC4inPlot = HUC4inPlot[strangeOrder,]
         tail(seq(yb,yt,(yt-yb)/nBreaks),-1),
         col=pal
       )
-      mtext("Coefficient\nMedian",side=3,at=1,cex=labCex)
+      mtext("Median\nDischarge",side=3,at=1,cex=labCex)
 
-      mtext(round(breaks, digits=2),side=2,at=c(1, tail(seq(yb,yt,(yt-yb)/nBreaks),-1)),las=2,cex=labCex)
+      mtext(round(breaks, digits=1),side=2,at=c(1, tail(seq(yb,yt,(yt-yb)/nBreaks),-1)),las=2,cex=labCex)
     })
 }
 if (toFile) {
