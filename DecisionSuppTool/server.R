@@ -1,130 +1,174 @@
-#
-# This is the server logic of a Shiny web application. 
-
 library(shiny)
-library(leaflet)
-library(rgdal)
 
 library(RPostgreSQL)
 library(postGIStools)
 
-source("../config/postgresqlcfg.R")
+library(raster)
 
-maxWET = 6 #Maximum wetland loss to report; set at 6 because it aids in visualization and excludes outliers.
+library(magrittr)
+library(dplyr)
+library(MCMCvis)
 
-#########################################
-# Database Connection + Loading/Merging
-#########################################
-if(exists("user") || exists("pw")) {  
-  con <- dbConnect(PostgreSQL(), dbname = db, user = user,
-                    host = host, port = port,
-                    password = pw)
-  rm(pw);rm(user)
+
+getModName = function(modelNo, climScen, year, ha=NULL, bw=NULL, vp=NULL, mc=NULL) {
+  if (year > 2006 && climScen > 1) { year = paste0("_", year) } else { year = ""}
+  climScen = c("", "-RCP3", "-RCP85")[climScen]
+  if (all(!is.null(c(ha, bw, vp, mc)))) {
+    restore = paste0("-", ha, bw, vp, mc)
+  } else {
+    restore = ""
+  }
+
+  return(sprintf("%s%s%s%s", modelNo, climScen, year, restore))
 }
 
+loadScenario = function(modelNo, climScen, year, ha=NULL, bw=NULL, vp=NULL, mc=NULL) {
+  modName = getModName(modelNo, climScen, year, ha, bw, vp, mc)
 
-# TODO: Merge can likely be done on the database side
-wetloss = get_postgis_query(con, sprintf('SELECT * FROM wetloss WHERE "WET" <= %s', maxWET))
-inlandbuff = get_postgis_query(con, "SELECT * FROM thkbuffers", geom_name = "geom")
-inlandbuff@data = merge(inlandbuff@data, wetloss, by = "ORIG_FID")
+  x = read.delim(sprintf("Data/%s.txt", modName), sep = "\t", check.names=F)
 
-source("scenarios.R")
-source("ESV.R")
+  assign(modName, x, envir = .GlobalEnv)
+  return(x)
+}
 
-#########################################
-# Drop Database connection
-#########################################
-dbDisconnect(con)
+pw = "powpass17"
+con <- dbConnect(PostgreSQL(), dbname = "gistest", user = "power_user",
+                 host = "13.58.102.61", port = 5432,
+                 password = pw)
+rm(pw)
 
-#########################################
-# Shiny Server Interaction
-#########################################
+thk99buff = get_postgis_query(con, 'SELECT * FROM thk99buff', geom_name = "geom")
+# thk99buff = readOGR("Data/thk99buff.shp", "thk99buff")
+thk99buff_n = read.delim("Data/thk99buff_n.txt", sep="\t", check.names = F)
+
+# if(!exists("thk99buff") | !exists("thk99buff_n")) {
+# thk99buff = readOGR("Data/thk99buff.shp", "thk99buff")
+#   thk99buff_n = read.delim("Data/thk99buff_n.txt", sep="\t", check.names = F)
+# }
+
+minWET = floor(min(thk99buff$logWET))
+maxWET = ceiling(max(thk99buff_n$logWET))
+# maxWET = ceiling(max(`58-RCP85_2300`$`50%`))
+# maxWET = ceiling(max(`58`$`50%`))
+
+scenName = "Base"
+baseLoss = sum(exp(thk99buff_n$logWET))
+
 
 colordefault = c("green","yellow","red")
 colorblind = c("#7fbf7b", "#f7f7f7","#af8dc3")
 legendColors = colordefault
-
 pal = colorNumeric(
   palette = legendColors,
-  domain = 0:maxWET, #inlandbuff@data$WET)
+  domain = minWET:maxWET,
   na.color="#FF0000")
 
-#Prediction Function (!!!DETERMINISTIC!!!)
-regionNDMI = c(-0.00019, -0.00041)
-regionTR = c(0.361169,1.177906)
-calcNewWET = function(RSLR,NDMI,TR,region) {return(-1.3022 + 0.156583*RSLR + regionNDMI[region]*NDMI + regionTR[region]*TR)}
-
 shinyServer(function(input, output, session) {
-
+  
   # Initial map draw
+  # ex = extent(thk99buff[thk99buff$region %in% c(9,10),])
+  
   output$mymap <- renderLeaflet({
-    
-    # firstRender = TRUE
-    # if(firstRender)
-    #Calculations
-    
-    
-    #Draw map
-    leaflet(data=inlandbuff) %>%
+    leaflet(data=thk99buff) %>%
       addProviderTiles("Stamen.Toner") %>%
       #addProviderTiles("CartoDB.Positron") %>%
       addPolygons(stroke=F,
-                  fillColor=~pal(WET), fillOpacity=1) %>%
-      addLegend(position = "bottomright", pal = pal, values = 0:maxWET, title = "Wetland Change <br> (hectares)")
-      #addMarkers(lng=174.768, lat=-36.852)
-    
+                  fillColor=~pal(logWET),
+                  fillOpacity=1,
+                  label = ~as.character(round(exp(logWET), digits=2))) %>%
+      addLegend(position = "bottomright",
+                colors = pal(minWET:maxWET),
+                labels = round(exp(minWET:maxWET),digits = 2),
+                title = "Wetland Change <br> (hectares)") # %>%
+      #fitBounds(ex@xmin, ex@ymin, ex@xmax, ex@ymax)
   })
   
   # Updater
   observe({
-    input$slr
+    input$year #Numerical year
+    input$scenario #Coded scenario
     
-    dat=inlandbuff@data[c("RSLR","NDMI","TR", "region")]
-    if(input$oilSubsidence)
-      dat$RSLR = dat$RSLR + sub_rate[input$years]*10
+    year = input$year
+    scenNo = as.numeric(input$scenario)
     
-    if(input$oilSpill && input$years < 10)
-      dat$NDMI = dat$NDMI-abs(dat$NDMI)*oilNDMI
+    # input$vegRestore
+    # input$bwRestore
+    # input$haRestore
     
-    if(input$vegRestore)
-      dat$NDMI = dat$NDMI + vegNDMI
+    if (input$year == 2006 || input$scenario == 1)
+    {
+      leafletProxy("mymap", data = thk99buff) %>% clearShapes() %>%
+        addPolygons(stroke=F,
+                    fillColor=~pal(logWET),
+                    fillOpacity=1,
+                    label = ~paste(round(exp(logWET), digits=2), "hectares"))
+      return()
+    }
     
-    if(input$bwRestore)
-      dat$NDMI = dat$NDMI + bwNDMI
+    # scens = c("",sprintf("-RCP3_%s", year),sprintf("-RCP85_%s", year))
+    # dType = c("","-NR","-od")
+    # scenName = sprintf("58-Any-10y-Y%s%s", scens[scenNo], dType[3])
+    # if (exists(scenName))
+    # {
+    #   scen = get(scenName)
+    # } else {
+    #   loc = sprintf("../../DataPrep/Results/LAonly/%s.RData", scenName)
+    #   load(loc)
+    # 
+    #   scen = MCMCsummary(output$samples) %>%
+    #     as.data.frame() %>%
+    #     cbind(param=row.names(.), .) %>%
+    #     mutate(param=as.character(param)) %>%
+    #     filter(grepl("logWET", param))
+    # 
+    #   assign(scenName, scen, envir = .GlobalEnv)
+    # 
+    #   rm(ls="output")
+    # }
     
-    inlandbuff@data$preds = exp(apply(dat,1,function(x) calcNewWET(x[1],x[2],x[3],x[4])))
+    scenName = getModName(58, scenNo, year)
+    if (exists(scenName))
+    {
+      scen = get(scenName)
+    } else {
+      scen = loadScenario(58, scenNo, year)
+    }
     
-    leafletProxy("mymap", data = inlandbuff) %>% clearShapes() %>%
+    leafletProxy("mymap", data = thk99buff) %>%
+      clearShapes() %>%
+      #clearControls() %>%
       addPolygons(stroke=F,
-                  fillColor=~pal(preds), fillOpacity=1)
+                  fillColor=~pal(exp(scen$`50%`)),
+                  fillOpacity=1,
+                  label = ~paste(round(exp(logWET), digits=2), "hectares"))
+    # 
+    # output$wetloss <- renderUI({
+    #   scenarioLoss = sum(exp(scen$`50%`))
+    #   HTML(paste(sep="<br/>",
+    #     paste("Base Wetland Loss:", round(baseLoss, digits=2), "hectares"),
+    #     paste("Scenario Wetland Loss:", round(scenarioLoss, digits=2), "hectares"),
+    #     paste("Change in Loss:", round(scenarioLoss - baseLoss, digits=2), "hectares")
+    #   ))
+    # })
   })
   
-  # output$histWetLoss <- renderPlot({
-  #   op=par(bg="#d5e8ea")
-  #   plot(density(inlandbuff@data$WET), main = "Wetland Loss", xlab="Hectares of Wetland Loss", ylab = "Density of Areas with Loss")
-  #   par(op)
-  # })
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      if (exists(scenName)) {
+        paste(scenName, '.csv', sep='')
+      } else {
+        return("wetloss9606.csv")
+      }
+    },
+    content = function(con) {
+      if (exists(scenName)) {
+        write.csv(get(scenName), con)
+      } else {
+        write.csv(thk99buff_n[c("ORIG_FID","WET","logWET")])
+      }
+    }
+  )
   
-  output$rslrUI <- renderUI({
-    slrVals = paste(paste0('"', c("Current","1","2","3"), '"'), collapse = ',')
-    list(
-      (HTML(
-        sprintf("
-                <script type='text/javascript'>
-                /*$(document).ready(function() {
-                var vals = [%s];
-                $('#slr').data('ionRangeSlider').update(
-                {values:vals,
-                min: 0,
-                max: 3,
-                from: 0})
-                })*/
-                </script>
-                ", slrVals)))
-    )
-  })
-  
-  #Close database connection on app exit
   session$onSessionEnded(function() {
     dbDisconnect(con)
   })

@@ -1,0 +1,59 @@
+
+    model {
+    for (i in 1:Nobs) {
+      logWET.mu[i] <- b0[region[i]] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i] #Linear Model
+      + bHA * HA[i] #HA or HA split dummies
+      + bMC * MC[i] + bBW * BW[i] + bVP * VP[i]  #Other restore type dummies
+      + bYEAR * YEAR[i] #Year of restore
+       #Restore dummy
+      
+      logWET[i] ~ dnorm(logWET.mu[i], logWET.tau) #Response distribution
+
+      logWET.mu.p[i] <- b0[region[i]] + bRSLR[region[i]] * (RSLR[i] + RSLRscenario) + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i] #Linear Model
+      + bHA * HAx[i] #HA or HA split dummies
+      + bMC * MCx[i] + bBW * BWx[i] + bVP * VPx[i]  #Other restore type dummies
+      + bYEAR * YEARx[i] #Year of restore
+       #Restore dummy
+
+      logWET.p[i] ~ dnorm(logWET.mu.p[i], logWET.tau) #Predictions   
+    }
+    
+    #Random Effect Priors
+    for(j in 1:Nregion) {
+      b0[j] ~ dnorm(b0.mu,b0.tau)
+      bRSLR[j] ~ dnorm(RSLR.mu,RSLR.tau)
+      bWH[j] ~ dnorm(WH.mu,WH.tau)
+      bTR[j] ~ dnorm(TR.mu,TR.tau)
+      
+    }
+    
+    #Hyper Priors
+    b0.mu ~ dnorm(0,0.00001)
+    b0.tau ~ dgamma(1,1)
+    RSLR.mu ~ dnorm(0,0.00001)
+    RSLR.sigma ~ dunif(0,10)
+    RSLR.tau <- sqrt(1/RSLR.sigma)
+    WH.mu ~ dnorm(0,0.00001)
+    WH.sigma ~ dunif(0,10)
+    WH.tau <- sqrt(1/WH.sigma)
+    TR.mu ~ dnorm(0,0.00001)
+    TR.sigma ~ dunif(0,10)
+    TR.tau <- sqrt(1/TR.sigma)
+    
+    
+    #Fixed Effect Priors
+    #HA or HA split
+    bHA ~ dnorm(0,0.00001)
+    #Other restore
+    bMC ~ dnorm(0,0.00001)
+bBW ~ dnorm(0,0.00001)
+bVP ~ dnorm(0,0.00001)
+    #Year
+    bYEAR ~ dnorm(0,0.00001)
+    #Restore dummy
+    
+
+    RSLRscenario <- 0
+    
+    logWET.tau ~ dgamma(1,1)
+    }

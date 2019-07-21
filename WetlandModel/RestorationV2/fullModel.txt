@@ -1,0 +1,53 @@
+model {
+    for (i in 1:Nobs) {
+        WET.mu[i] <- b0[region[i]] + bTR[region[i]] * TR[i] + bNDVI[region[i]] * NDVI[i] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bCS[region[i]] * CS[i] + bBW[region[i]] * BW[i] + bHA[region[i]] * HA[i] + bVP[region[i]] * VP[i] + bMC[region[i]] * MC[i] + bYEAR[region[i]] * YEAR[i] + bRESTORE[region[i]] * RESTORE[i]							
+							
+        WET[i] ~ dnorm(WET.mu[i], WET.tau) #Response distribution
+    }
+
+    #Random Effect Priors
+    for(j in 1:Nregion) {
+		b0[j]  ~ dnorm(b0.mu, b0.tau)
+		bTR[j] ~ dnorm(TR.mu, TR.tau)
+		bNDVI[j] ~ dnorm(NDVI.mu, NDVI.tau)
+		bRSLR[j] ~ dnorm(RSLR.mu, RSLR.tau)
+		bWH[j] ~ dnorm(WH.mu, WH.tau)
+		bCS[j] ~ dnorm(CS.mu, CS.tau)
+		bBW[j] ~ dnorm(BW.mu, BW.tau)
+		bHA[j] ~ dnorm(HA.mu, HA.tau)
+		bVP[j] ~ dnorm(VP.mu, VP.tau)
+		bMC[j] ~ dnorm(MC.mu, MC.tau)
+		bYEAR[j] ~ dnorm(YEAR.mu, YEAR.tau)
+		bRESTORE[j] ~ dnorm(RESTORE.mu, RESTORE.tau)
+    }
+
+    #Hyper Priors
+    b0.mu ~ dnorm(0,0.00001)
+    b0.tau ~ dgamma(1,1)
+    TR.mu ~ dnorm(0,0.00001)
+    TR.tau ~ dgamma(1,1)
+    NDVI.mu ~ dnorm(0,0.00001)
+    NDVI.tau ~ dgamma(1,1) 
+    RSLR.mu ~ dnorm(0,0.00001)
+    RSLR.tau ~ dgamma(1,1) 
+    WH.mu ~ dnorm(0,0.00001)
+    WH.tau ~ dgamma(1,1) 
+    CS.mu ~ dnorm(0,0.00001)
+    CS.tau ~ dgamma(1,1) 
+    BW.mu ~ dnorm(0,0.00001)
+    BW.tau ~ dgamma(1,1) 
+    HA.mu ~ dnorm(0,0.00001)
+    HA.tau ~ dgamma(1,1) 
+    VP.mu ~ dnorm(0,0.00001)
+    VP.tau ~ dgamma(1,1) 
+    MC.mu ~ dnorm(0,0.00001)
+    MC.tau ~ dgamma(1,1) 
+    YEAR.mu ~ dnorm(0,0.00001)
+    YEAR.tau ~ dgamma(1,1) 
+    RESTORE.mu ~ dnorm(0,0.00001)
+    RESTORE.tau ~ dgamma(1,1) 
+    
+    #Fixed Effect Priors
+    
+    WET.tau ~ dgamma(1,1)
+}

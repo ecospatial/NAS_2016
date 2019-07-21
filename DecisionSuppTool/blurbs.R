@@ -1,11 +1,13 @@
 
-htmlFormat = function(text){
-  text = text %>% gsub("\\n\\s*\\n\\s*  ", "<p></p>", .) %>% paste0("<p>", .) %>% paste0(., "</p>")
+htmlFormat = function(x){
+  text = x %>% paste0(collapse="</p><p>") %>% paste0("<p>", .) %>% paste0(.,"</p>")
   return(text)
 }
 
 blurbs = list(
-  slr=htmlFormat("Background information coming soon."),
+  year=htmlFormat("Background information coming soon."),
+  
+  scenarios=htmlFormat("Background information coming soon."),
   
   subsidence=htmlFormat("Background information coming soon."),
   
@@ -13,5 +15,8 @@ blurbs = list(
   
   vegRestore=htmlFormat("Background information coming soon."),
   
-  bwRestore=htmlFormat("Background information coming soon.")
+  bwRestore=htmlFormat("Background information coming soon."),
+  
+  haRestore=htmlFormat("Background information coming soon.")
 )
+

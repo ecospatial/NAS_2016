@@ -2,13 +2,21 @@ library(coda)
 library(magrittr)
 library(MCMCvis)
 
-getCI = function(modelNo, modelName = NULL){
+getCI = function(modelNo, modelName = NULL, dir=""){
   if (is.null(modelName))
   {
-    load(file=sprintf("Results/%s.RData", modelNo))
+    fileName= sprintf("%sResults/%s.RData", dir, modelNo)
+    if (file.exists(fileName))
+    {
+      load(file=fileName)
+    } else {
+      print(sprintf("Not found in base folder, checking for folder named %s", modelNo))
+      fileName = sprintf("%sResults/%s/%s.RData", dir, modelNo, modelNo)
+      load(file=fileName)
+    }
     return(output)
   }
-  load(file=sprintf("Results/%s/%s.RData", modelName, modelNo))
+  load(file=sprintf("%sResults/%s/%s.RData", dir, modelName, modelNo))
   return(output)
 }
 
@@ -227,10 +235,13 @@ combineDIC = function(baseFolderName, top = 10, omit=NA)
   
   dicCombine = rbind(dic1,dic2)
   dicCombine = dicCombine[order(dicCombine$DIC),]
-  dicCombine = head(dicCombine, top)
+  if (!is.na(top)) {
+    print(top)
+    dicCombine = head(dicCombine, top)
+  }
   
-  topD1 = length(dicCombine[dicCombine$type == "base",])
-  topD2 = length(dicCombine[dicCombine$type == "intercept",])
+  topD1 = nrow(dicCombine[dicCombine$type == "base",])
+  topD2 = nrow(dicCombine[dicCombine$type == "intercept",])
   
   # Grab significance information for each set
   d1 = signifExamine(baseFolderName, top = topD1, omit=omit)

@@ -10,7 +10,9 @@ library(RPostgreSQL)
 library(postGIStools)
 source("../RUtilityFunctions/createModels.R")
 source("../RUtilityFunctions/codaSamplesDIC.R")
+source("loadTHK99.R")
 
+loadTHK99data(local=T, regions="ALL")
 
 runModel = function(modParams, getData = F)
 {

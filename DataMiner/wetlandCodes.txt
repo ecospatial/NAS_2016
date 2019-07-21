@@ -1,0 +1,265 @@
+ID	Type96	Type06
+13	Unclassified (Cloud, Shadow, etc.)	Palustrine Forested Wetland
+14	Unclassified (Cloud, Shadow, etc.)	Palustrine Scrub/Shrub Wetland
+15	Unclassified (Cloud, Shadow, etc.)	Palustrine Emergent Wetland
+16	Unclassified (Cloud, Shadow, etc.)	Estuarine Forested Wetland
+17	Unclassified (Cloud, Shadow, etc.)	Estuarine Scrub/Shrub Wetland
+18	Unclassified (Cloud, Shadow, etc.)	Estuarine Emergent Wetland
+38	High Intensity Developed	Palustrine Forested Wetland
+39	High Intensity Developed	Palustrine Scrub/Shrub Wetland
+40	High Intensity Developed	Palustrine Emergent Wetland
+41	High Intensity Developed	Estuarine Forested Wetland
+42	High Intensity Developed	Estuarine Scrub/Shrub Wetland
+43	High Intensity Developed	Estuarine Emergent Wetland
+63	Medium Intensity Developed	Palustrine Forested Wetland
+64	Medium Intensity Developed	Palustrine Scrub/Shrub Wetland
+65	Medium Intensity Developed	Palustrine Emergent Wetland
+66	Medium Intensity Developed	Estuarine Forested Wetland
+67	Medium Intensity Developed	Estuarine Scrub/Shrub Wetland
+68	Medium Intensity Developed	Estuarine Emergent Wetland
+88	Low Intensity Developed	Palustrine Forested Wetland
+89	Low Intensity Developed	Palustrine Scrub/Shrub Wetland
+90	Low Intensity Developed	Palustrine Emergent Wetland
+91	Low Intensity Developed	Estuarine Forested Wetland
+92	Low Intensity Developed	Estuarine Scrub/Shrub Wetland
+93	Low Intensity Developed	Estuarine Emergent Wetland
+113	Open Space Developed	Palustrine Forested Wetland
+114	Open Space Developed	Palustrine Scrub/Shrub Wetland
+115	Open Space Developed	Palustrine Emergent Wetland
+116	Open Space Developed	Estuarine Forested Wetland
+117	Open Space Developed	Estuarine Scrub/Shrub Wetland
+118	Open Space Developed	Estuarine Emergent Wetland
+138	Cultivated Land	Palustrine Forested Wetland
+139	Cultivated Land	Palustrine Scrub/Shrub Wetland
+140	Cultivated Land	Palustrine Emergent Wetland
+141	Cultivated Land	Estuarine Forested Wetland
+142	Cultivated Land	Estuarine Scrub/Shrub Wetland
+143	Cultivated Land	Estuarine Emergent Wetland
+163	Pasture/Hay	Palustrine Forested Wetland
+164	Pasture/Hay	Palustrine Scrub/Shrub Wetland
+165	Pasture/Hay	Palustrine Emergent Wetland
+166	Pasture/Hay	Estuarine Forested Wetland
+167	Pasture/Hay	Estuarine Scrub/Shrub Wetland
+168	Pasture/Hay	Estuarine Emergent Wetland
+188	Grassland	Palustrine Forested Wetland
+189	Grassland	Palustrine Scrub/Shrub Wetland
+190	Grassland	Palustrine Emergent Wetland
+191	Grassland	Estuarine Forested Wetland
+192	Grassland	Estuarine Scrub/Shrub Wetland
+193	Grassland	Estuarine Emergent Wetland
+213	Deciduous Forest	Palustrine Forested Wetland
+214	Deciduous Forest	Palustrine Scrub/Shrub Wetland
+215	Deciduous Forest	Palustrine Emergent Wetland
+215	Deciduous Forest	Estuarine Forested Wetland
+217	Deciduous Forest	Estuarine Scrub/Shrub Wetland
+218	Deciduous Forest	Estuarine Emergent Wetland
+238	Evergreen Forest	Palustrine Forested Wetland
+239	Evergreen Forest	Palustrine Scrub/Shrub Wetland
+240	Evergreen Forest	Palustrine Emergent Wetland
+241	Evergreen Forest	Estuarine Forested Wetland
+242	Evergreen Forest	Estuarine Scrub/Shrub Wetland
+243	Evergreen Forest	Estuarine Emergent Wetland
+263	Mixed Forest	Palustrine Forested Wetland
+264	Mixed Forest	Palustrine Scrub/Shrub Wetland
+265	Mixed Forest	Palustrine Emergent Wetland
+266	Mixed Forest	Estuarine Forested Wetland
+267	Mixed Forest	Estuarine Scrub/Shrub Wetland
+268	Mixed Forest	Estuarine Emergent Wetland
+288	Scrub/Shrub	Palustrine Forested Wetland
+289	Scrub/Shrub	Palustrine Scrub/Shrub Wetland
+290	Scrub/Shrub	Palustrine Emergent Wetland
+291	Scrub/Shrub	Estuarine Forested Wetland
+292	Scrub/Shrub	Estuarine Scrub/Shrub Wetland
+293	Scrub/Shrub	Estuarine Emergent Wetland
+301	Palustrine Forested Wetland	Unclassified (Cloud, Shadow, etc)
+302	Palustrine Forested Wetland	High Intensity Developed
+303	Palustrine Forested Wetland	Medium Intensity Developed
+304	Palustrine Forested Wetland	Low Intensity Developed
+305	Palustrine Forested Wetland	Open Space Developed
+306	Palustrine Forested Wetland	Cultivated Land
+307	Palustrine Forested Wetland	Pasture/Hay
+308	Palustrine Forested Wetland	Grassland
+309	Palustrine Forested Wetland	Deciduous Forest
+310	Palustrine Forested Wetland	Evergreen Forest
+311	Palustrine Forested Wetland	Mixed Forest
+312	Palustrine Forested Wetland	Scrub/Shrub
+313	Palustrine Forested Wetland	Palustrine Forested Wetland
+314	Palustrine Forested Wetland	Palustrine Scrub/Shrub Wetland
+315	Palustrine Forested Wetland	Palustrine Emergent Wetland
+316	Palustrine Forested Wetland	Estuarine Forested Wetland
+317	Palustrine Forested Wetland	Estuarine Scrub/Shrub Wetland
+318	Palustrine Forested Wetland	Estuarine Emergent Wetland
+319	Palustrine Forested Wetland	Unconsolidated Shore (Beach, Flat, Bar)
+320	Palustrine Forested Wetland	Bare Land
+321	Palustrine Forested Wetland	Water
+322	Palustrine Forested Wetland	Palustrine Aquatic Bed
+323	Palustrine Forested Wetland	Estuarine Aquatic Bed
+324	Palustrine Forested Wetland	Tundra
+325	Palustrine Forested Wetland	Snow/Ice
+326	Palustrine Scrub/Shrub Wetland	Unclassified (Cloud, Shadow, etc)
+327	Palustrine Scrub/Shrub Wetland	High Intensity Developed
+329	Palustrine Scrub/Shrub Wetland	Medium Intensity Developed
+329	Palustrine Scrub/Shrub Wetland	Low Intensity Developed
+330	Palustrine Scrub/Shrub Wetland	Open Space Developed
+331	Palustrine Scrub/Shrub Wetland	Cultivated Land
+332	Palustrine Scrub/Shrub Wetland	Pasture/Hay
+333	Palustrine Scrub/Shrub Wetland	Grassland
+334	Palustrine Scrub/Shrub Wetland	Deciduous Forest
+335	Palustrine Scrub/Shrub Wetland	Evergreen Forest
+336	Palustrine Scrub/Shrub Wetland	Mixed Forest
+337	Palustrine Scrub/Shrub Wetland	Scrub/Shrub
+338	Palustrine Scrub/Shrub Wetland	Palustrine Forested Wetland
+339	Palustrine Scrub/Shrub Wetland	Palustrine Scrub/Shrub Wetland
+340	Palustrine Scrub/Shrub Wetland	Palustrine Emergent Wetland
+341	Palustrine Scrub/Shrub Wetland	Estuarine Forested Wetland
+342	Palustrine Scrub/Shrub Wetland	Estuarine Scrub/Shrub Wetland
+343	Palustrine Scrub/Shrub Wetland	Estuarine Emergent Wetland
+344	Palustrine Scrub/Shrub Wetland	Unconsolidated Shore (Beach, Flat, Bar)
+345	Palustrine Scrub/Shrub Wetland	Bare Land
+346	Palustrine Scrub/Shrub Wetland	Water
+347	Palustrine Scrub/Shrub Wetland	Palustrine Aquatic Bed
+348	Palustrine Scrub/Shrub Wetland	Estuarine Aquatic Bed
+349	Palustrine Scrub/Shrub Wetland	Tundra
+350	Palustrine Scrub/Shrub Wetland	Snow/Ice
+351	Palustrine Emergent Wetland	Unclassified (Cloud, Shadow, etc)
+352	Palustrine Emergent Wetland	High Intensity Developed
+353	Palustrine Emergent Wetland	Medium Intensity Developed
+354	Palustrine Emergent Wetland	Low Intensity Developed
+355	Palustrine Emergent Wetland	Open Space Developed
+356	Palustrine Emergent Wetland	Cultivated Land
+357	Palustrine Emergent Wetland	Pasture/Hay
+358	Palustrine Emergent Wetland	Grassland
+359	Palustrine Emergent Wetland	Deciduous Forest
+360	Palustrine Emergent Wetland	Evergreen Forest
+361	Palustrine Emergent Wetland	Mixed Forest
+362	Palustrine Emergent Wetland	Scrub/Shrub
+363	Palustrine Emergent Wetland	Palustrine Forested Wetland
+364	Palustrine Emergent Wetland	Palustrine Scrub/Shrub Wetland
+365	Palustrine Emergent Wetland	Palustrine Emergent Wetland
+366	Palustrine Emergent Wetland	Estuarine Forested Wetland
+367	Palustrine Emergent Wetland	Estuarine Scrub/Shrub Wetland
+368	Palustrine Emergent Wetland	Estuarine Emergent Wetland
+369	Palustrine Emergent Wetland	Unconsolidated Shore (Beach, Flat, Bar)
+370	Palustrine Emergent Wetland	Bare Land
+371	Palustrine Emergent Wetland	Water
+372	Palustrine Emergent Wetland	Palustrine Aquatic Bed
+373	Palustrine Emergent Wetland	Estuarine Aquatic Bed
+374	Palustrine Emergent Wetland	Tundra
+375	Palustrine Emergent Wetland	Snow/Ice
+376	Estuarine Forested Wetland	Unclassified (Cloud, Shadow, etc)
+377	Estuarine Forested Wetland	High Intensity Developed
+378	Estuarine Forested Wetland	Medium Intensity Developed
+379	Estuarine Forested Wetland	Low Intensity Developed
+380	Estuarine Forested Wetland	Open Space Developed
+381	Estuarine Forested Wetland	Cultivated Land
+382	Estuarine Forested Wetland	Pasture/Hay
+383	Estuarine Forested Wetland	Grassland
+384	Estuarine Forested Wetland	Deciduous Forest
+385	Estuarine Forested Wetland	Evergreen Forest
+386	Estuarine Forested Wetland	Mixed Forest
+387	Estuarine Forested Wetland	Scrub/Shrub
+388	Estuarine Forested Wetland	Palustrine Forested Wetland
+389	Estuarine Forested Wetland	Palustrine Scrub/Shrub Wetland
+390	Estuarine Forested Wetland	Palustrine Emergent Wetland
+391	Estuarine Forested Wetland	Estuarine Forested Wetland
+392	Estuarine Forested Wetland	Estuarine Scrub/Shrub Wetland
+393	Estuarine Forested Wetland	Estuarine Emergent Wetland
+394	Estuarine Forested Wetland	Unconsolidated Shore (Beach, Flat, Bar)
+395	Estuarine Forested Wetland	Bare Land
+396	Estuarine Forested Wetland	Water
+397	Estuarine Forested Wetland	Palustrine Aquatic Bed
+398	Estuarine Forested Wetland	Estuarine Aquatic Bed
+399	Estuarine Forested Wetland	Tundra
+400	Estuarine Forested Wetland	Snow/Ice
+401	Estuarine Scrub/Shrub Wetland	Unclassified (Cloud, Shadow, etc)
+402	Estuarine Scrub/Shrub Wetland	High Intensity Developed
+403	Estuarine Scrub/Shrub Wetland	Medium Intensity Developed
+404	Estuarine Scrub/Shrub Wetland	Low Intensity Developed
+405	Estuarine Scrub/Shrub Wetland	Open Space Developed
+406	Estuarine Scrub/Shrub Wetland	Cultivated Land
+407	Estuarine Scrub/Shrub Wetland	Pasture/Hay
+408	Estuarine Scrub/Shrub Wetland	Grassland
+409	Estuarine Scrub/Shrub Wetland	Deciduous Forest
+410	Estuarine Scrub/Shrub Wetland	Evergreen Forest
+411	Estuarine Scrub/Shrub Wetland	Mixed Forest
+412	Estuarine Scrub/Shrub Wetland	Scrub/Shrub
+413	Estuarine Scrub/Shrub Wetland	Palustrine Forested Wetland
+414	Estuarine Scrub/Shrub Wetland	Palustrine Scrub/Shrub Wetland
+415	Estuarine Scrub/Shrub Wetland	Palustrine Emergent Wetland
+416	Estuarine Scrub/Shrub Wetland	Estuarine Forested Wetland
+417	Estuarine Scrub/Shrub Wetland	Estuarine Scrub/Shrub Wetland
+418	Estuarine Scrub/Shrub Wetland	Estuarine Emergent Wetland
+419	Estuarine Scrub/Shrub Wetland	Unconsolidated Shore (Beach, Flat, Bar)
+420	Estuarine Scrub/Shrub Wetland	Bare Land
+421	Estuarine Scrub/Shrub Wetland	Water
+422	Estuarine Scrub/Shrub Wetland	Palustrine Aquatic Bed
+423	Estuarine Scrub/Shrub Wetland	Estuarine Aquatic Bed
+424	Estuarine Scrub/Shrub Wetland	Tundra
+425	Estuarine Scrub/Shrub Wetland	Snow/Ice
+426	Estuarine Emergent Wetland	Unclassified (Cloud, Shadow, etc)
+427	Estuarine Emergent Wetland	High Intensity Developed
+428	Estuarine Emergent Wetland	Medium Intensity Developed
+429	Estuarine Emergent Wetland	Low Intensity Developed
+430	Estuarine Emergent Wetland	Open Space Developed
+431	Estuarine Emergent Wetland	Cultivated Land
+432	Estuarine Emergent Wetland	Pasture/Hay
+433	Estuarine Emergent Wetland	Grassland
+434	Estuarine Emergent Wetland	Deciduous Forest
+435	Estuarine Emergent Wetland	Evergreen Forest
+436	Estuarine Emergent Wetland	Mixed Forest
+437	Estuarine Emergent Wetland	Scrub/Shrub
+438	Estuarine Emergent Wetland	Palustrine Forested Wetland
+439	Estuarine Emergent Wetland	Palustrine Scrub/Shrub Wetland
+440	Estuarine Emergent Wetland	Palustrine Emergent Wetland
+441	Estuarine Emergent Wetland	Estuarine Forested Wetland
+442	Estuarine Emergent Wetland	Estuarine Scrub/Shrub Wetland
+443	Estuarine Emergent Wetland	Estuarine Emergent Wetland
+444	Estuarine Emergent Wetland	Unconsolidated Shore (Beach, Flat, Bar)
+445	Estuarine Emergent Wetland	Bare Land
+446	Estuarine Emergent Wetland	Water
+447	Estuarine Emergent Wetland	Palustrine Aquatic Bed
+448	Estuarine Emergent Wetland	Estuarine Aquatic Bed
+449	Estuarine Emergent Wetland	Tundra
+450	Estuarine Emergent Wetland	Snow/Ice
+463	Unconsolidated Shore (Beach, Flat, Bar)	Palustrine Forested Wetland
+464	Unconsolidated Shore (Beach, Flat, Bar)	Palustrine Scrub/Shrub Wetland
+465	Unconsolidated Shore (Beach, Flat, Bar)	Palustrine Emergent Wetland
+466	Unconsolidated Shore (Beach, Flat, Bar)	Estuarine Forested Wetland
+467	Unconsolidated Shore (Beach, Flat, Bar)	Estuarine Scrub/Shrub Wetland
+468	Unconsolidated Shore (Beach, Flat, Bar)	Estuarine Emergent Wetland
+488	Bare Land	Palustrine Forested Wetland
+489	Bare Land	Palustrine Scrub/Shrub Wetland
+490	Bare Land	Palustrine Emergent Wetland
+491	Bare Land	Estuarine Forested Wetland
+492	Bare Land	Estuarine Scrub/Shrub Wetland
+493	Bare Land	Estuarine Emergent Wetland
+513	Water	Palustrine Forested Wetland
+514	Water	Palustrine Scrub/Shrub Wetland
+515	Water	Palustrine Emergent Wetland
+516	Water	Estuarine Forested Wetland
+517	Water	Estuarine Scrub/Shrub Wetland
+518	Water	Estuarine Emergent Wetland
+538	Palustrine Aquatic Bed	Palustrine Forested Wetland
+539	Palustrine Aquatic Bed	Palustrine Scrub/Shrub Wetland
+540	Palustrine Aquatic Bed	Palustrine Emergent Wetland
+541	Palustrine Aquatic Bed	Estuarine Forested Wetland
+542	Palustrine Aquatic Bed	Estuarine Scrub/Shrub Wetland
+543	Palustrine Aquatic Bed	Estuarine Emergent Wetland
+563	Estuarine Aquatic Bed	Palustrine Forested Wetland
+564	Estuarine Aquatic Bed	Palustrine Scrub/Shrub Wetland
+565	Estuarine Aquatic Bed	Palustrine Emergent Wetland
+566	Estuarine Aquatic Bed	Estuarine Forested Wetland
+567	Estuarine Aquatic Bed	Estuarine Scrub/Shrub Wetland
+568	Estuarine Aquatic Bed	Estuarine Emergent Wetland
+588	Tundra	Palustrine Forested Wetland
+589	Tundra	Palustrine Scrub/Shrub Wetland
+590	Tundra	Palustrine Emergent Wetland
+591	Tundra	Estuarine Forested Wetland
+592	Tundra	Estuarine Scrub/Shrub Wetland
+593	Tundra	Estuarine Emergent Wetland
+613	Snow/Ice	Palustrine Forested Wetland
+614	Snow/Ice	Palustrine Scrub/Shrub Wetland
+615	Snow/Ice	Palustrine Emergent Wetland
+616	Snow/Ice	Estuarine Forested Wetland
+617	Snow/Ice	Estuarine Scrub/Shrub Wetland
+618	Snow/Ice	Estuarine Emergent Wetland

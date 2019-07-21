@@ -160,8 +160,8 @@ for (modelNo in pctModels$modelNo)
 
 
 
-# Brief Analysis ----------------------------------------------------------
 
+# DIC vs PPL --------------------------------------------------------------
 areaDICppl = read.delim(areaSummaryFilePath, sep = "\t")
 pctDICppl = read.delim(pctSummaryFilePath, sep = "\t")
 
@@ -172,4 +172,3 @@ op = par(mfrow=c(1,2))
 plot(DIC~PPL, areaDICppl)
 plot(DIC~PPL, pctDICppl)
 par(op)
-

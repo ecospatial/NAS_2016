@@ -4,7 +4,7 @@ pw = "powpass17"
 
 
 # Don't change text below unless you have your own database ---------------
-host = "52.14.87.100"
+host = "13.58.102.61"
 port = 5432
-db = "postgiz"
+db = "gistest"
 

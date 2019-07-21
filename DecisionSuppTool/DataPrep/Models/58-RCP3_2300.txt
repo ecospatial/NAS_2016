@@ -1,0 +1,33 @@
+model {
+    for (i in 1:Nobs) {
+		logWET.mu[i] <- b0[region[i]] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i] #Linear Model
+		logWET[i] ~ dnorm(logWET.mu[i], logWET.tau) #Response distribution
+
+		logWET.mu.p[i] <- b0[region[i]] + bRSLR[region[i]] * (RSLR[i] + RSLRscenario) + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i] #Linear Model
+		logWET.p[i] ~ dnorm(logWET.mu.p[i], logWET.tau) #Predictions   
+    }
+
+    #Random Effect Priors
+    for(j in 1:Nregion) {
+        b0[j] ~ dnorm(b0.mu,b0.tau)
+        bRSLR[j] ~ dnorm(RSLR.mu,RSLR.tau)
+        bWH[j] ~ dnorm(WH.mu,WH.tau)
+        bTR[j] ~ dnorm(TR.mu,TR.tau)
+    }
+
+    #Hyper Priors
+    b0.mu ~ dnorm(0,0.00001)
+    b0.tau ~ dgamma(1,1)
+    RSLR.mu ~ dnorm(0,0.00001)
+    RSLR.tau ~ dgamma(1,1)
+    WH.mu ~ dnorm(0,0.00001)
+    WH.tau ~ dgamma(1,1)
+    TR.mu ~ dnorm(0,0.00001)
+    TR.tau ~ dgamma(1,1) 
+    
+    #Fixed Effect Priors
+    RSLRscenario ~ dnorm(0.83, 0.21)
+    
+    
+    logWET.tau ~ dgamma(1,1)
+}

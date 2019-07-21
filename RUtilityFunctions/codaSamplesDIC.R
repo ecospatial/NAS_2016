@@ -57,5 +57,5 @@ coda.samples.dic <- function (model, variable.names = NULL, n.iter, thin = 1, ..
   
   dic <- list(deviance = mean(as.vector(deviance)), penalty = mean(as.vector(pD)), type = 'pD')
   class(dic) <- "dic"
-  return(list(samples=mcmc.list(ans), dic=dic))
+  return(list(samples=mcmc.list(ans), dic=dic, data=model$data()))
 }

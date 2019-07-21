@@ -1,0 +1,35 @@
+model {
+    for (i in 1:Nobs) {
+        CHG.mu[i] <- b0 + bTR * TR[i] + bWH[RESTORETYPE[i],region[i]] * WH[i] + bRSLR[RESTORETYPE[i],region[i]] * RSLR[i] + bYEAR * YEAR[i]
+							
+        CHG[i] ~ dnorm(CHG.mu[i], CHG.tau) #Response distribution
+    }
+	
+	for(j in 1:Ntypes) {
+		for (k in 1:Nregion) {
+			bWH[j,k] ~ dnorm(aWH[k], aWH.tau)
+			bRSLR[j,k] ~ dnorm(aRSLR[k], aRSLR.tau)
+		}
+	}
+	for(k in 1:Ntypes) {
+		aWH[k] ~ dnorm(WH.mu, WH.tau)
+		aRSLR[k] ~ dnorm(RSLR.mu, RSLR.tau)
+	}
+	
+	#Hyper-hyper Priors
+	aWH.tau ~ dgamma(1,1) 
+	aRSLR.tau ~ dgamma(1,1) 
+
+    #Hyper Priors
+    RSLR.mu ~ dnorm(0,0.00001)
+    RSLR.tau ~ dgamma(1,1) 
+    WH.mu ~ dnorm(0,0.00001)
+    WH.tau ~ dgamma(1,1) 
+    
+    #Fixed Effect Priors
+    b0 ~ dnorm(0,0.00001)
+    bTR ~ dnorm(0,0.00001)
+    bYEAR ~ dnorm(0,0.00001)
+    
+    CHG.tau ~ dgamma(1,1)
+}

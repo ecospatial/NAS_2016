@@ -1,0 +1,70 @@
+
+model {
+  for (i in 1:Nobs) {
+    # Likelihood
+    logWET.mu[i] <- b0[region[i]] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i]
+                    + bHA * HA[i] + bMC * MC[i] + bBW * BW[i] + bVP * VP[i]  #Restore type dummies
+                    + bYEAR * YEAR[i] #Year of restore
+    
+    # Response distribution
+    logWET[i] ~ dnorm(logWET.mu[i], logWET.tau)
+    
+    # Predictive posterior
+    logWET.mu.p[i] <- b0[region[i]] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i]
+                      + bHA * HA[i] + bMC * MC[i] + bBW * BW[i] + bVP * VP[i]  #Restore type dummies
+                      + bYEAR * YEAR[i] #Year of restore
+
+    # PP distribution
+    logWET.p[i] ~ dnorm(logWET.mu.p[i], logWET.tau)
+    
+    # No restore posterior
+    logWET.mu.noR[i] <- b0[region[i]] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i]
+                      + bYEAR * 0 #Year of restore
+
+    # PP distribution
+    logWET.noR[i] ~ dnorm(logWET.mu.noR[i], logWET.tau)
+    
+    # HA restore posterior
+    logWET.mu.HA[i] <- b0[region[i]] + bRSLR[region[i]] * RSLR[i] + bWH[region[i]] * WH[i] + bTR[region[i]] * TR[i]
+                      + bHA * 1 + bMC * MC[i] + bBW * BW[i] + bVP * VP[i]  #Restore type dummies
+                      + bYEAR * 0 #Year of restore
+
+    # PP distribution
+    logWET.HA[i] ~ dnorm(logWET.mu.HA[i], logWET.tau)
+  }
+  
+  #Random Effect Priors
+  for(j in 1:Nregion) {
+    b0[j] ~ dnorm(b0.mu,b0.tau)
+    bRSLR[j] ~ dnorm(RSLR.mu,RSLR.tau)
+    bWH[j] ~ dnorm(WH.mu,WH.tau)
+    bTR[j] ~ dnorm(TR.mu,TR.tau)
+  }
+  
+  #Hyper Priors
+  b0.mu ~ dnorm(0,0.00001)
+  b0.tau ~ dgamma(1,1)
+  RSLR.mu ~ dnorm(0,0.00001)
+  RSLR.sigma ~ dunif(0,10)
+  RSLR.tau <- sqrt(1/RSLR.sigma)
+  WH.mu ~ dnorm(0,0.00001)
+  WH.sigma ~ dunif(0,10)
+  WH.tau <- sqrt(1/WH.sigma)
+  TR.mu ~ dnorm(0,0.00001)
+  TR.sigma ~ dunif(0,10)
+  TR.tau <- sqrt(1/TR.sigma)
+  
+  
+  #Fixed Effect Priors
+  #HA or HA split
+  bHA ~ dnorm(0,0.00001)
+  #Other restore
+  bMC ~ dnorm(0,0.00001)
+  bBW ~ dnorm(0,0.00001)
+  bVP ~ dnorm(0,0.00001)
+  #Year
+  bYEAR ~ dnorm(0,0.00001)
+  #Restore dummy
+  
+  logWET.tau ~ dgamma(1,1)
+}
