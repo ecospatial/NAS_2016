@@ -153,30 +153,30 @@ HUC4inPlot = HUC4inPlot[strangeOrder,]
   
   # Bar plot for n
   labCex = 0.8
-  #subplot(
-  #  x = par("usr")[1] + (par("usr")[2]-par("usr")[1])*0.4,
-  #  y=24.5,
-  #  size = scaleSubplot(c(3,2), toFile),
-  #  type = 'fig',
-  #  pars = list(
-  #    mar=c(4,2,0,0),
-  #    mgp=c(1.5,0.75,0)
-  #  ),
-  #  fun = {
-  #    x = barplot(HUC4inPlot$NSITES,
-  #                xlab = "Watershed",
-  #                ylab="n",
-  #                ylim=c(0, 1.20*max(HUC4inPlot$NSITES)),
-  #                names=HUC4inPlot$region[hackyReorder],
-  #                col="orange", #cols
-  #                cex.axis=labCex,
-  #                cex.names=labCex,
-  #                cex.lab=labCex)
-  #
-  #    text(x = x, y = HUC4inPlot$NSITES, label = HUC4inPlot$NSITES, pos = 3, cex = labCex)
-  #  })
+  subplot(
+    x = par("usr")[1] + (par("usr")[2]-par("usr")[1])*0.4,
+    y=24.5,
+    size = scaleSubplot(c(3,2), toFile),
+    type = 'fig',
+    pars = list(
+      mar=c(4,2,0,0),
+      mgp=c(1.5,0.75,0)
+    ),
+    fun = {
+      x = barplot(HUC4inPlot$NSITES,
+                  xlab = "Watershed",
+                  ylab="n",
+                  ylim=c(0, 1.20*max(HUC4inPlot$NSITES)),
+                  names=HUC4inPlot$region[hackyReorder],
+                  col="orange", #cols
+                  cex.axis=labCex,
+                  cex.names=labCex,
+                  cex.lab=labCex)
+  
+      text(x = x, y = HUC4inPlot$NSITES, label = HUC4inPlot$NSITES, pos = 3, cex = labCex)
+    })
 
-  # Scale
+  # Scalebar
   subplot(
     x = par("usr")[1] + (par("usr")[2]-par("usr")[1])*0.8,
     y = 25,
