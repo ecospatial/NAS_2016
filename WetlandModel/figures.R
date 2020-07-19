@@ -89,10 +89,6 @@ percent
 write.table(percent, "Figures/TableII.txt", sep="\t")
 
 # Figure 1 - Study Area ---------------------------------------------------
-if (toFile){
-  png("Figures/Figure1.png", width = 8, height = 6, units="in", res=300)
-}
-
 
 # Read in discharge data
 hucData = read.delim("Discharge/dischargePerHUC.txt", sep="\t")
@@ -115,7 +111,10 @@ strangeOrder[9:10] = strangeOrder[10:9] # Swap regions 9 and 10
 strangeOrder[1:length(strangeOrder)] = strangeOrder[length(strangeOrder):1] # Order from 14 to 1 with strange order (9 and 10 swapped)
 HUC4inPlot = HUC4inPlot[strangeOrder,]
 
-# Plot
+# Plot 1.1
+if (toFile){
+  png("Figures/Figure1.1.png", width = 8, height = 6, units="in", res=300)
+}
 {
   op=par(mar=c(2,2,0,1))
   # Initialize plot
@@ -148,8 +147,12 @@ HUC4inPlot = HUC4inPlot[strangeOrder,]
   text(coordinates(HUC4visible), labels = labs, cex = 0.7)
   text(coordinates(HUC4visible[HUC4visible$avgdis >= breaks[8],]), labels = labs[HUC4visible$avgdis >= breaks[8]], cex = 0.7, col="WHITE")
 
+  # Widgets
   addscalebar()
   addnortharrow(scale=0.5)
+  
+  # Zoom boundaries
+  rect(-90.5, 28, -89.5, 31, border="red", lwd=3)
   
   # Bar plot for n
   labCex = 0.8
@@ -196,8 +199,42 @@ HUC4inPlot = HUC4inPlot[strangeOrder,]
       )
       mtext("Median\nDischarge",side=3,at=1,cex=labCex)
 
-      mtext(round(breaks, digits=1),side=2,at=c(1, tail(seq(yb,yt,(yt-yb)/nBreaks),-1)),las=2,cex=labCex)
+      mtext(round(breaks, digits=0),side=2,at=c(1, tail(seq(yb,yt,(yt-yb)/nBreaks),-1)),las=2,cex=labCex)
     })
+}
+if (toFile) {
+  dev.off()
+}
+# Plot 1.2
+if (toFile){
+  png("Figures/Figure1.2.png", width = 3, height = 6, units="in", res=300)
+}
+{
+  op=par(mar=c(2,2,0,1))
+  # Initialize plot
+  plot(thk99buff, xlim=c(-90.5,-89.5), ylim=c(28,31), border=NA, col=NA, axes=T)
+  
+  # Coastlines
+  plot(coastlines,add=T,lty=2)
+  
+  # HUCs shaded by discharge
+  nBreaks = 9
+  pal = brewer.pal(nBreaks, "PuBu")
+  breaks = classIntervals(HUC4inPlot$avgdis, n = nBreaks, style = "jenks")$brks
+  brknDis = cut(HUC4inPlot$avgdis, breaks)
+  cols = pal[brknDis]
+  cols[HUC4inPlot$avgdis == breaks[1]] = pal[1]
+  cols[is.na(cols)] = "red"
+  plot(HUC4inPlot, col=cols, add=T)
+  
+  # State lines
+  plot(stateMap, add=T, lty=2)
+  
+  # THK99
+  plot(thk99buff, add=T, border="orange", col="yellow")
+  
+  addscalebar()
+  addnortharrow(scale=0.5)
 }
 if (toFile) {
   dev.off()

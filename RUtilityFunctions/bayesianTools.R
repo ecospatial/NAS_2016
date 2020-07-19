@@ -51,6 +51,8 @@ signifExamine = function(modelName, top = 10, all = F, omit=NA)
 {
   dic = read.delim(sprintf("Results/%s/DIC_%s.txt", modelName, modelName), skip = 1)
   dic = dic[order(dic$DIC),]
+  print("nrowdic1")
+  print(nrow(dic))
   
   if (!is.na(omit))
   {
@@ -59,6 +61,8 @@ signifExamine = function(modelName, top = 10, all = F, omit=NA)
       dic = dic[!(grepl(o, dic$fixed) | grepl(o, dic$random)),]
     }
   }
+  print("nrowdic2")
+  print(nrow(dic))
 
   if(all)
   {
@@ -66,6 +70,8 @@ signifExamine = function(modelName, top = 10, all = F, omit=NA)
   } else {
     dic = head(dic, top)
   }
+  print("nrowdic3")
+  print(nrow(dic))
   
   dic$sig = rep(NA, nrow(dic))
   dic$non = rep(NA, nrow(dic))
@@ -236,7 +242,6 @@ combineDIC = function(baseFolderName, top = 10, omit=NA)
   dicCombine = rbind(dic1,dic2)
   dicCombine = dicCombine[order(dicCombine$DIC),]
   if (!is.na(top)) {
-    print(top)
     dicCombine = head(dicCombine, top)
   }
   

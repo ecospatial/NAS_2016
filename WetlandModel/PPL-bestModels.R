@@ -9,19 +9,19 @@ pctModelName = "logPCT-14R-NDVI"
 predPostArea = "        logWET.p[i] ~ dnorm(logWET.mu[i], logWET.tau)"
 predPostPct = "        logPCT.p[i] ~ dnorm(logPCT.mu[i], logPCT.tau)"
 
-areaPPmodelDir = sprintf("Models/PP-%s", areaModelName)
-pctPPmodelDir = sprintf("Models/PP-%s", pctModelName)
+areaPPmodelDir = sprintf("Results_03_2020/Models/PP-%s", areaModelName)
+pctPPmodelDir = sprintf("Results_03_2020/Models/PP-%s", pctModelName)
 
-areaPPresultDir = sprintf("Results/PP-%s", areaModelName)
+areaPPresultDir = sprintf("Results_03_2020/Results/PP-%s", areaModelName)
 areaSummaryFilePath = sprintf("%s/DICPPL_PP-%s.txt", areaPPresultDir, areaModelName)
-pctPPresultDir = sprintf("Results/PP-%s", pctModelName)
+pctPPresultDir = sprintf("Results_03_2020/Results/PP-%s", pctModelName)
 pctSummaryFilePath = sprintf("%s/DICPPL_PP-%s.txt", pctPPresultDir, pctModelName)
 
 
 # Create model files for predictive posterior -----------------------------
 
 # Area Models
-areaModels=combineDIC(areaModelName)
+areaModels=combineDIC(areaModelName,top=NA)
 areaModels=areaModels[c("modelNo","fixed","random","DIC","sig","type")]
 
 if (!dir.exists(areaPPmodelDir))
@@ -54,7 +54,7 @@ for (i in areaModels$modelNo) # For the models listed in the top 10; but you can
 }
 
 # Percent Models
-pctModels=combineDIC(pctModelName)
+pctModels=combineDIC(pctModelName,top=NA)
 pctModels=pctModels[c("modelNo","fixed","random","DIC","sig","type")]
 
 if (!dir.exists(pctPPmodelDir))
