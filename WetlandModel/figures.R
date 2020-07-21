@@ -124,13 +124,15 @@ if (toFile){
   plot(coastlines,add=T,lty=2)
   
   # HUCs shaded by discharge
-  nBreaks = 9
+  nBreaks = 5
   pal = brewer.pal(nBreaks, "PuBu")
-  breaks = classIntervals(HUC4inPlot$avgdis, n = nBreaks, style = "jenks")$brks
+  #breaks = classIntervals(HUC4inPlot$avgdis, n = nBreaks, style = "jenks")$brks
+  breaks = c(0, 4000, 8000, 12000, 16000, 20000)
   brknDis = cut(HUC4inPlot$avgdis, breaks)
   cols = pal[brknDis]
   cols[HUC4inPlot$avgdis == breaks[1]] = pal[1]
   cols[is.na(cols)] = "red"
+  cols[5:6] = cols[6:5]
   plot(HUC4inPlot, col=cols, add=T)
   
   # State lines
@@ -140,35 +142,35 @@ if (toFile){
   plot(thk99buff, add=T, border="orange", col="yellow")
   #points(coordinates(thk99buff), col="yellow", pch=21)
   
+  # Zoom boundaries
+  rect(-90.5, 28, -89.5, 31, border="red", lwd=3)
+  
   # Labels
   hackyReorder = c(1:4, 6:5, 7:14)
   labs = paste0(HUC4inPlot$SHORTNAME2, "\n", HUC4inPlot$region[hackyReorder])
   HUC4visible = crop(HUC4inPlot, extent(par('usr'))) # Crop HUC4inPlot to only the plot region so that labels are placed within plot
   text(coordinates(HUC4visible), labels = labs, cex = 0.7)
-  text(coordinates(HUC4visible[HUC4visible$avgdis >= breaks[8],]), labels = labs[HUC4visible$avgdis >= breaks[8]], cex = 0.7, col="WHITE")
+  text(coordinates(HUC4visible[6,]), labels = labs[6], cex = 0.7, col="WHITE")
 
   # Widgets
   addscalebar()
   addnortharrow(scale=0.5)
-  
-  # Zoom boundaries
-  rect(-90.5, 28, -89.5, 31, border="red", lwd=3)
   
   # Bar plot for n
   labCex = 0.8
   subplot(
     x = par("usr")[1] + (par("usr")[2]-par("usr")[1])*0.4,
     y=24.5,
-    size = scaleSubplot(c(3,2), toFile),
+    size = scaleSubplot(c(4,2), toFile),
     type = 'fig',
     pars = list(
-      mar=c(4,2,0,0),
+      mar=c(4,2.5,0,0),
       mgp=c(1.5,0.75,0)
     ),
     fun = {
       x = barplot(HUC4inPlot$NSITES,
                   xlab = "Watershed",
-                  ylab="n",
+                  ylab="Sites",
                   ylim=c(0, 1.20*max(HUC4inPlot$NSITES)),
                   names=HUC4inPlot$region[hackyReorder],
                   col="orange", #cols
@@ -181,7 +183,7 @@ if (toFile){
 
   # Scalebar
   subplot(
-    x = par("usr")[1] + (par("usr")[2]-par("usr")[1])*0.8,
+    x = par("usr")[1] + (par("usr")[2]-par("usr")[1])*0.825,
     y = 25,
     size = scaleSubplot(c(1,1.5), toFile),
     fun = {
