@@ -249,10 +249,10 @@ if (toFile)
   png(sprintf("Figures/Figure2.png", figureNo, covar), width = 12, height = 6, units="in", res=300)
 }
 units = list(
-  RSLR = "mm/yr",
-  WH = "m",
-  CS = "%",
-  TR = "m",
+  RSLR = "RSLR (mm/yr)",
+  WH = "Wave Height (m)",
+  CS = "Coastal Slope (%)",
+  TR = "Tidal Range (m)",
   NDVI = "NDVI",
   logWET = "Wetland loss (log hectares)"
 )
@@ -264,14 +264,8 @@ op = par(mfrow=c(2,3))
 for (covar in c("RSLR", "WH", "TR", "CS", "NDVI", "logWET"))
 {
   frmla = formula(sprintf("%s~regionO", covar))
-  op1 = par(mar=c(5,4,0,0))
+  op1 = par(mar=c(5,4.5,0,0))
   boxplot(frmla, data=thk99buff, xlab = "Watershed", ylab = units[[covar]], cex.axis=1.3, cex.lab=1.3)
-  
-  plotDims = par("usr")
-  height = plotDims[4] - plotDims[3]
-  xPos = plotDims[1] - ifelse(toFile==T, 0, 1.5)
-  yPos = plotDims[4] - height * 0.01
-  labelRegion = legend(xPos, yPos, sprintf("%s)", covar), bty="n", cex=1.3)
   par(op1)
 }
 par(op)
