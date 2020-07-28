@@ -1,7 +1,12 @@
-import urllib
+import urllib.request as urllib2
 import os
+import sys
 
-dir = os.path.dirname(os.path.realpath(__file__))
+if len(sys.argv) != 2:
+    print('You must pass the data directory as the first argument. E.g. "py pingCCAP.py C:/DATA"')
+    exit()
+
+dir = sys.argv[1]
 
 states = ['al','fl','ms','la','tx']
 base_url = 'https://coast.noaa.gov/htdata/CCAP/ccap_regional_change/%s_2006_2010_CCAP_CHANGE.zip'
@@ -15,11 +20,11 @@ for state in states:
         request = urllib2.Request(url, headers=headers)
         response = urllib2.urlopen(request)
         meta = response.info()
-        file_size = int(meta.getheaders('Content-Length')[0])
+        file_size = int(meta['Content-Length'])
         file_name = os.path.basename(url)
-        local_file_path = "%s/%s" % (dir, file_name)
+        local_file_path = "%s/CCAP/T0/Change9606/%s" % (dir, file_name)
         if os.path.exists(local_file_path):
-            print '%s already downloaded.' % file_name
+            print('%s already downloaded.' % file_name)
             continue
         
         print ('Downloading: %s [%s bytes]\n%s' % (file_name, file_size, url))
@@ -27,7 +32,7 @@ for state in states:
             local_file.write(response.read())
             local_file.close()
 
-        print 'Download (%s) complete!' % file_name
+        print('Download (%s) complete!' % file_name)
             
     except (urllib2.HTTPError, urllib2.URLError) as e:
         print(e.code)
