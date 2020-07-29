@@ -127,11 +127,11 @@ if (toFile){
   nBreaks = 5
   pal = brewer.pal(nBreaks, "PuBu")
   #breaks = classIntervals(HUC4inPlot$avgdis, n = nBreaks, style = "jenks")$brks
-  breaks = c(0, 4000, 8000, 12000, 16000, 20000)
+  breaks = c(0, 500, 1000, 1500, 2000, 2500, 3000)
   brknDis = cut(HUC4inPlot$avgdis, breaks)
   cols = pal[brknDis]
   cols[HUC4inPlot$avgdis == breaks[1]] = pal[1]
-  cols[is.na(cols)] = "red"
+  cols[is.na(cols)] = "maroon3" # Will color those outside the break range 
   cols[5:6] = cols[6:5]
   plot(HUC4inPlot, col=cols, add=T)
   
@@ -143,7 +143,7 @@ if (toFile){
   #points(coordinates(thk99buff), col="yellow", pch=21)
   
   # Zoom boundaries
-  rect(-90.5, 28, -89.5, 31, border="red", lwd=3)
+  rect(-90.5, 28, -89.5, 31, border="black", lwd=3)
   
   # Labels
   hackyReorder = c(1:4, 6:5, 7:14)
@@ -194,14 +194,15 @@ if (toFile){
       plot(NA,type="n",ann=FALSE,xlim=c(1,2),ylim=c(1,2),xaxt="n",yaxt="n",bty="n")
       rect(
         xl,
-        head(seq(yb,yt,(yt-yb)/nBreaks),-1),
+        head(seq(yb,yt,(yt-yb)/(nBreaks+1)),-1),
         xr,
-        tail(seq(yb,yt,(yt-yb)/nBreaks),-1),
-        col=pal
+        tail(seq(yb,yt,(yt-yb)/(nBreaks+1)),-1),
+        col=c(pal, "maroon3")
       )
       mtext("Median\nDischarge",side=3,at=1,cex=labCex)
-
-      mtext(round(breaks, digits=0),side=2,at=c(1, tail(seq(yb,yt,(yt-yb)/nBreaks),-1)),las=2,cex=labCex)
+      modifiedLabels = breaks
+      modifiedLabels[length(modifiedLabels)] = max(HUC4inPlot$avgdis)
+      mtext(round(modifiedLabels, digits=0),side=2,at=c(1, tail(seq(yb,yt,(yt-yb)/(nBreaks+1)),-1)),las=2,cex=labCex)
     })
 }
 if (toFile) {
@@ -220,13 +221,15 @@ if (toFile){
   plot(coastlines,add=T,lty=2)
   
   # HUCs shaded by discharge
-  nBreaks = 9
+  nBreaks = 5
   pal = brewer.pal(nBreaks, "PuBu")
-  breaks = classIntervals(HUC4inPlot$avgdis, n = nBreaks, style = "jenks")$brks
+  #breaks = classIntervals(HUC4inPlot$avgdis, n = nBreaks, style = "jenks")$brks
+  breaks = c(0, 500, 1000, 1500, 2000, 2500, 3000)
   brknDis = cut(HUC4inPlot$avgdis, breaks)
   cols = pal[brknDis]
   cols[HUC4inPlot$avgdis == breaks[1]] = pal[1]
-  cols[is.na(cols)] = "red"
+  cols[is.na(cols)] = "maroon3" # Will color those outside the break range 
+  cols[5:6] = cols[6:5]
   plot(HUC4inPlot, col=cols, add=T)
   
   # State lines
