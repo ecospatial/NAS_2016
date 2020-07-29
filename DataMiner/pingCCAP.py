@@ -1,6 +1,13 @@
 import urllib.request as urllib2
 import os
 import sys
+import zipfile
+
+def unzip_file(path, target):
+    print('Unzipping %s ...' % path)
+    zip = zipfile.ZipFile(path)
+    target_extract_path = "%s/CCAP/T0/Change9606" % dir
+    zip.extractall(target)
 
 if len(sys.argv) != 2:
     print('You must pass the data directory as the first argument. E.g. "py pingCCAP.py C:/DATA"')
@@ -23,8 +30,10 @@ for state in states:
         file_size = int(meta['Content-Length'])
         file_name = os.path.basename(url)
         local_file_path = "%s/CCAP/T0/Change9606/%s" % (dir, file_name)
+        target_extract_path = "%s/CCAP/T0/Change9606" % dir
         if os.path.exists(local_file_path):
             print('%s already downloaded.' % file_name)
+            unzip_file(file_name, target_extract_path)
             continue
         
         print ('Downloading: %s [%s bytes]\n%s' % (file_name, file_size, url))
@@ -33,9 +42,8 @@ for state in states:
             local_file.close()
 
         print('Download (%s) complete!' % file_name)
+        unzip_file(file_name, target_extract_path)
             
     except (urllib2.HTTPError, urllib2.URLError) as e:
         print(e.code)
         print(e.args)
-
-
