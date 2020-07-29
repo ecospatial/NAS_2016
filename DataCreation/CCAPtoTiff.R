@@ -5,8 +5,8 @@ library(raster)
 # Configuration -----------------------------------------------------------
 ccapT0Dir = "C:/DATA/CCAP/T0/"
 ccapT1Dir = "C:/DATA/CCAP/T1/"
-extension = "_1996_ccap_land_cover.img" #"_1996_2006_ccap_change.img"
-folder = "Cover96"
+extension = "_1996_2006_ccap_change.img"
+folder = "Change9606"
 
 # Initialization ------------------------------------------------------------
 ccap = list(
